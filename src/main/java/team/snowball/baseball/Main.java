@@ -1,12 +1,14 @@
 package team.snowball.baseball;
 
+import team.snowball.baseball.dao.ConnectionDAO;
+
 /**
  * author         : Jason Lee
- * date           : 2023-06-24
+ * date           : 2023-06-25
  * description    :
  */
 public class Main {
     public static void main(String[] args) {
-        System.out.println("Hello world!");
+        BaseBallApp.getInstance().test();
     }
 }
