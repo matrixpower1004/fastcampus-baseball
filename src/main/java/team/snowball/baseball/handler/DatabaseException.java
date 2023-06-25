@@ -1,6 +1,6 @@
 package team.snowball.baseball.handler;
 
-import team.snowball.baseball.resource.ErrorMessage;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_DATABASE;
 
 /**
  * author         : Jason Lee
@@ -9,7 +9,7 @@ import team.snowball.baseball.resource.ErrorMessage;
  */
 public class DatabaseException extends RuntimeException {
     public DatabaseException() {
-        super(ErrorMessage.ERR_MSG_INVALID_DATABASE);
+        super(ERR_MSG_INVALID_DATABASE.getErrorMessage());
     }
 
     public DatabaseException(String message) {
