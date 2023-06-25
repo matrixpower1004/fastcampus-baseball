@@ -1,4 +1,4 @@
-package team.snowball.baseball.model;
+package team.snowball.baseball.model.player;
 
 import lombok.*;
 
