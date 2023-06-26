@@ -29,7 +29,6 @@ create table player(
 create table out_player(
 	id int primary key auto_increment,
     player_id int unique not null,
-    name varchar(255) not null,
     reason varchar(255) not null,
     created_at timestamp not null,
     
