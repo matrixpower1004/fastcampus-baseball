@@ -1,6 +1,13 @@
 package team.snowball.baseball;
 
-import team.snowball.baseball.dao.ConnectionDAO;
+import team.snowball.baseball.dto.QueryParseDto;
+import team.snowball.baseball.handler.InputEndException;
+import team.snowball.baseball.handler.InvalidInputException;
+import team.snowball.baseball.service.InputService;
+import team.snowball.baseball.view.InputQuery;
+
+import static team.snowball.baseball.code.ConsoleMessage.MSG_INPUT_END;
+import static team.snowball.baseball.code.ConsoleMessage.MSG_REQUEST_INPUT;
 
 /**
  * author         : Jason Lee
@@ -10,8 +17,10 @@ import team.snowball.baseball.dao.ConnectionDAO;
 public class BaseBallApp {
 
     private static BaseBallApp baseBallApp;
+    private static final InputQuery inputQuery = InputQuery.getInstance();
+    private static final InputService inputService = InputService.getInstance();
 
-    public BaseBallApp() {
+    private BaseBallApp() {
         baseBallApp = this;
     }
 
@@ -22,11 +31,20 @@ public class BaseBallApp {
         return baseBallApp;
     }
 
-    public BaseBallApp test() {
-        String result = ConnectionDAO.connectionTest();
-        System.out.println(result);
-
-        return this;
+    public void run() {
+        while (true) {
+            try {
+                System.out.println(MSG_REQUEST_INPUT.getMessage());
+                String query = inputQuery.nextLIne();
+                System.out.println(query);
+                QueryParseDto queryParseDTO = inputService.queryParse(query);
+            } catch (InputEndException e) {
+                System.out.println(MSG_INPUT_END.getMessage());
+                break;
+            } catch (InvalidInputException e) {
+                System.out.println(e.getMessage());
+            }
+        }
     }
 
-}
+} //end of class
