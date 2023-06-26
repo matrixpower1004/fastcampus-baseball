@@ -23,10 +23,11 @@ insert into player(team_id, name, position, created_at) values(null, "모창민"
 
 
 -- 은퇴 선수 데이터 생성
-insert into out_player(player_id, reason, created_at) values (10, "은퇴", now());
-insert into out_player(player_id, reason, created_at) values (11, "은퇴", now());
+insert into out_player(player_id, name, reason, created_at) values (10, "이상훈", "은퇴", now());
+insert into out_player(player_id, name, reason, created_at) values (11, "모창민", "은퇴", now());
 
 select * from stadium;
 select * from team;
 select * from player;
 select * from out_player;
+
