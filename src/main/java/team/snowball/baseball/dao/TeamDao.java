@@ -1,7 +1,6 @@
 package team.snowball.baseball.dao;
 
 import team.snowball.baseball.handler.DatabaseException;
-import team.snowball.baseball.model.Stadium;
 import team.snowball.baseball.model.Team;
 
 import java.sql.*;
@@ -33,15 +32,7 @@ public class TeamDao {
             statement.executeUpdate();
         } catch (SQLException e) {
             throw new DatabaseException(e.getMessage());
-        }
-        finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    throw new DatabaseException(e.getMessage());
-                }
-            }
+        } finally {
             SnowballDBManager.disconnect(connection, null, null);
         }
     }
@@ -51,9 +42,11 @@ public class TeamDao {
     public List<Team> getAllTeams() {
         List<Team> teams = new ArrayList<>();
         String query = "SELECT * FROM team";
+        PreparedStatement statement = null;
         ResultSet resultSet = null;
-        try (Statement statement = connection.createStatement()) {
-            resultSet = statement.executeQuery(query);
+        try {
+            statement = connection.prepareStatement(query);
+            resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Long id = resultSet.getLong("id");
                 int stadiumId = resultSet.getInt("stadium_id");
@@ -65,13 +58,6 @@ public class TeamDao {
         } catch (SQLException e) {
             throw new DatabaseException(e.getMessage());
         } finally {
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    throw new DatabaseException(e.getMessage());
-                }
-            }
             SnowballDBManager.disconnect(connection, null, null);
         }
         return teams;
