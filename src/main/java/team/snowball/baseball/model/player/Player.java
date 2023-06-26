@@ -20,6 +20,5 @@ public class Player {
     private String name;
     private String position;
 
-    private Timestamp createdA;
-
+    private Timestamp createdAt;
 }
