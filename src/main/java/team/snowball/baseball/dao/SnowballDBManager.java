@@ -10,9 +10,12 @@ import java.sql.*;
  * description    :
  */
 public class SnowballDBManager {
-    public static Connection connection(String url, String id, String pw) {
+    public static final Connection getConnection() {
+        String url = "jdbc:mysql://localhost:3306/baseball?serverTimezone=Asia/Seoul";
+        String id = "matrixpower";
+        String pwd = "forCe@9348#";
         try {
-            return DriverManager.getConnection(url, id, pw);
+            return DriverManager.getConnection(url, id, pwd);
         } catch (SQLException e) {
             throw new DatabaseException();
         }
