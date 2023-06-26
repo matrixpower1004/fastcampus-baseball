@@ -34,13 +34,6 @@ public class StadiumDao {
         } catch (SQLException e) {
             throw new DatabaseException(e.getMessage());
         } finally {
-            if (statement != null) {
-                try {
-                    statement.close();
-                } catch (SQLException e) {
-                    throw new DatabaseException(e.getMessage());
-                }
-            }
             SnowballDBManager.disconnect(connection, null, null);
         }
     }
@@ -49,9 +42,11 @@ public class StadiumDao {
     public List<Stadium> getAllStadiums() {
         List<Stadium> stadiums = new ArrayList<>();
         String query = "SELECT * FROM stadium";
+        PreparedStatement statement = null;
         ResultSet resultSet = null;
-        try (Statement statement = connection.createStatement()) {
-            resultSet = statement.executeQuery(query);
+        try {
+            statement = connection.prepareStatement(query);
+            resultSet = statement.executeQuery();
             while (resultSet.next()) {
                 Long id = resultSet.getLong("id");
                 String name = resultSet.getString("name");
@@ -62,13 +57,6 @@ public class StadiumDao {
         } catch (SQLException e) {
             throw new DatabaseException(e.getMessage());
         } finally {
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                    throw new DatabaseException(e.getMessage());
-                }
-            }
             SnowballDBManager.disconnect(connection, null, null);
         }
         return stadiums;
