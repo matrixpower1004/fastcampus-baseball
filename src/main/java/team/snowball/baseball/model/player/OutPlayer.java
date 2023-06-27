@@ -18,7 +18,6 @@ import java.sql.Timestamp;
 public class OutPlayer {
     private Long id;
     private Long playerId;
-    private String name;
     private String reason;
 
     private Timestamp createdAt;

@@ -21,11 +21,7 @@ import static team.snowball.baseball.code.ErrorMessage.*;
  * description    :
  */
 public class PlayerDao implements PlayerRepository {
-    private Connection connection;
-
-    public PlayerDao() {
-        connection = SnowballDBManager.getConnection();
-    }
+    private static final Connection connection = SnowballDBManager.getConnection();
 
     @Override
     public int insert(Player player) {
@@ -87,6 +83,7 @@ public class PlayerDao implements PlayerRepository {
                 playerList.add(player);
             }
 
+            // TODO: 잊지 말고 나중에 삭제
             Stream.of(playerList).forEach(System.out::println);
             return playerList;
 
@@ -133,4 +130,5 @@ public class PlayerDao implements PlayerRepository {
             SnowballDBManager.disconnect(connection, pstmt, null);
         }
     }
-}
+
+} // end of class PlayerDao
