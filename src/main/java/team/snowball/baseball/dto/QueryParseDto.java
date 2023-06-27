@@ -25,7 +25,7 @@ public class QueryParseDto {
     @Override
     public String toString() {
         return "QueryParseDto{" +
-                "doman=" + domain +
+                "domain=" + domain +
                 ", command=" + command +
                 ", params=" + params +
                 '}';
