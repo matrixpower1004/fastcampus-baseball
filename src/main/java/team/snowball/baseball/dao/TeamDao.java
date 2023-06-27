@@ -33,7 +33,7 @@ public class TeamDao {
         } catch (SQLException e) {
             throw new DatabaseException(e.getMessage());
         } finally {
-            SnowballDBManager.disconnect(connection, null, null);
+            SnowballDBManager.disconnect(connection, statement, null);
         }
     }
 
@@ -58,7 +58,7 @@ public class TeamDao {
         } catch (SQLException e) {
             throw new DatabaseException(e.getMessage());
         } finally {
-            SnowballDBManager.disconnect(connection, null, null);
+            SnowballDBManager.disconnect(connection, statement, resultSet);
         }
         return teams;
     }

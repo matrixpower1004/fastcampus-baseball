@@ -34,7 +34,7 @@ public class StadiumDao {
         } catch (SQLException e) {
             throw new DatabaseException(e.getMessage());
         } finally {
-            SnowballDBManager.disconnect(connection, null, null);
+            SnowballDBManager.disconnect(connection, statement, null);
         }
     }
 
@@ -50,14 +50,14 @@ public class StadiumDao {
             while (resultSet.next()) {
                 Long id = resultSet.getLong("id");
                 String name = resultSet.getString("name");
-                Timestamp createdA = resultSet.getTimestamp("created_at");
-                Stadium stadium = new Stadium(id, name, createdA);
+                Timestamp createdAt = resultSet.getTimestamp("created_at");
+                Stadium stadium = new Stadium(id, name, createdAt);
                 stadiums.add(stadium);
             }
         } catch (SQLException e) {
             throw new DatabaseException(e.getMessage());
         } finally {
-            SnowballDBManager.disconnect(connection, null, null);
+            SnowballDBManager.disconnect(connection, statement, resultSet);
         }
         return stadiums;
     }
