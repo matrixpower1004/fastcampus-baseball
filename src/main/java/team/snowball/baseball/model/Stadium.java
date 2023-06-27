@@ -18,6 +18,6 @@ public class Stadium {
 
     private Long id;
     private String name;
-    private Timestamp createdA;
+    private Timestamp createdAt;
 
 }
