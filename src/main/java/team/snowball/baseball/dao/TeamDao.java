@@ -17,8 +17,8 @@ public class TeamDao {
 
     private Connection connection;
 
-    public TeamDao(Connection connection) {
-        this.connection = connection;
+    public TeamDao() {
+        connection = SnowballDBManager.getConnection();
     }
 
     // 팀 등록

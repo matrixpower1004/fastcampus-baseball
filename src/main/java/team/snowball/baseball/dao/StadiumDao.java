@@ -19,8 +19,8 @@ public class StadiumDao {
 
     private Connection connection;
 
-    public StadiumDao(Connection connection) {
-        this.connection = connection;
+    public StadiumDao() {
+        connection = SnowballDBManager.getConnection();
     }
 
     // 야구장 등록
