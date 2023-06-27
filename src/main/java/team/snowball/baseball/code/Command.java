@@ -22,7 +22,6 @@ public enum Command {
 
     private final String command;
 
-
     public static Command findByCommandName(String request) {
         return Arrays.stream(Command.values())
                 .filter(c -> c.command.equals(request.substring(
