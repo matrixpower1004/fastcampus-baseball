@@ -2,6 +2,8 @@ package team.snowball.baseball.model.player;
 
 import team.snowball.baseball.dto.OutPlayerRespDto;
 
+import java.util.List;
+
 /**
  * author         : Jason Lee
  * date           : 2023-06-27
@@ -10,5 +12,5 @@ import team.snowball.baseball.dto.OutPlayerRespDto;
 public interface OutPlayerRepository {
     int insert(OutPlayer outPlayer);
 
-    OutPlayerRespDto finalAll();
+    List<OutPlayerRespDto> findAll();
 }

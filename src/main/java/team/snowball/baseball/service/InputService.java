@@ -65,18 +65,16 @@ public class InputService {
 
         // Query parameter 없이 명령어만 있다면, 명령어만 해석하여 리턴
         if (parts.length == 1 ) {
-            System.out.println("명령어만 있습니다.");
             QueryParseDto queryParseDTO = QueryParseDto.builder()
                     .domain(findByDomainName(query))
                     .command(findByCommandName(query))
                     .build();
-            System.out.println(queryParseDTO);
             return queryParseDTO;
         }
 
         // Query paramer 해석하여 리턴
-        String commands = parts[0];
-        String params = parts[1];
+        final String commands = parts[0];
+        final String params = parts[1];
 
         // &를 기준으로 나누기
         if (params.indexOf("=") < 1) {
@@ -90,7 +88,6 @@ public class InputService {
                         .map((String it) -> splitQueryParams(it))
                         .collect(Collectors.toMap(m -> m.keySet().iterator().next(), m -> m.values().iterator().next())))
                 .build();
-        System.out.println(queryParseDTO);
 
         return queryParseDTO;
     }

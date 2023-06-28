@@ -13,6 +13,8 @@ public interface PlayerRepository {
 
     List<Player> findByTeamId(int id);
 
-    int delete(int id);
+    int delete(Long id);
 
+    //Todo: update 구현
+//    int update(Player player);
 }

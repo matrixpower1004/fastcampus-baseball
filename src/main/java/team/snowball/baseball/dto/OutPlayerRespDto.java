@@ -14,6 +14,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 @Builder
 public class OutPlayerRespDto {
     private Long id;
@@ -21,15 +22,4 @@ public class OutPlayerRespDto {
     private String position;
     private String reason;
     private Timestamp outDate;
-
-    @Override
-    public String toString() {
-        return "OutPlayerRespDto{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", position='" + position + '\'' +
-                ", reason='" + reason + '\'' +
-                ", outDate=" + outDate +
-                '}';
-    }
 }
