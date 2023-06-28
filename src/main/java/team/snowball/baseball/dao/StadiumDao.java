@@ -137,7 +137,7 @@ public class StadiumDao implements StadiumRepository {
     }
 
 
-    // 업데이트 메세지 논의 후 추가 예정
+    // TODO: 업데이트 메세지 논의 후 추가 or 삭제 예정
     // 업데이트
     @Override
     public int update(Stadium stadium) {
