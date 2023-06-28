@@ -5,7 +5,6 @@ import lombok.Getter;
 import team.snowball.baseball.handler.InvalidInputException;
 
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * author         : Jason Lee
@@ -28,9 +27,5 @@ public enum Command {
                         request.length() - c.command.length(), request.length())))
                 .findFirst()
                 .orElseThrow(InvalidInputException::new);
-    }
-
-    public boolean isEquals(String request) {
-        return this.command.equals(request);
     }
 }
