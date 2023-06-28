@@ -4,15 +4,17 @@ import team.snowball.baseball.dto.OutPlayerRespDto;
 import team.snowball.baseball.handler.DatabaseException;
 import team.snowball.baseball.model.player.OutPlayer;
 import team.snowball.baseball.model.player.OutPlayerRepository;
-import team.snowball.baseball.model.player.Player;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
-import static team.snowball.baseball.code.ConsoleMessage.*;
-import static team.snowball.baseball.code.ErrorMessage.*;
+import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_REGISTER;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_FIND;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_REGISTER;
 
 /**
  * author         : Jason Lee
@@ -20,6 +22,18 @@ import static team.snowball.baseball.code.ErrorMessage.*;
  * description    :
  */
 public class OutPlayerDao implements OutPlayerRepository {
+
+    private static OutPlayerDao outPlayerDao;
+
+    private OutPlayerDao() {
+    }
+
+    public static OutPlayerDao getInstance() {
+        if (outPlayerDao == null) {
+            outPlayerDao = new OutPlayerDao();
+        }
+        return outPlayerDao;
+    }
 
     private static final Connection connection = SnowballDBManager.getConnection();
 
@@ -45,7 +59,7 @@ public class OutPlayerDao implements OutPlayerRepository {
             pstmt.setLong(1, playerId);
             pstmt.setString(2, outPlayer.getReason());
 
-            // insert 결과가 1이 아니면 실패.
+            // insert 결과가 1건이 아니라면 실패.
             if (pstmt.executeUpdate() != 1) {
                 connection.rollback();
                 System.out.println(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
@@ -87,7 +101,7 @@ public class OutPlayerDao implements OutPlayerRepository {
     }
 
     @Override
-    public OutPlayerRespDto finalAll() {
+    public List<OutPlayerRespDto> findAll() {
         PreparedStatement pstmt = null;
         ResultSet resultSet = null;
 
@@ -99,6 +113,7 @@ public class OutPlayerDao implements OutPlayerRepository {
             pstmt = connection.prepareStatement(sql);
             resultSet = pstmt.executeQuery();
 
+            List<OutPlayerRespDto> outPlayerList = new ArrayList<>();
             OutPlayerRespDto outPlayerRespDto = null;
             while (resultSet.next()) {
                 outPlayerRespDto = OutPlayerRespDto.builder()
@@ -108,19 +123,21 @@ public class OutPlayerDao implements OutPlayerRepository {
                         .reason(resultSet.getString("reason"))
                         .outDate(resultSet.getTimestamp("created_at"))
                         .build();
+                outPlayerList.add(outPlayerRespDto);
             }
 
-            // TODO: 잊지 말고 나중에 삭제
-            System.out.println(outPlayerRespDto.toString());
+            if (outPlayerList == null) {
+                throw new DatabaseException();
+            }
 
-            return outPlayerRespDto;
+            return outPlayerList;
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new DatabaseException(ERR_MSG_FAILED_TO_FIND.getErrorMessage());
         } finally {
-            SnowballDBManager.disconnect(connection, pstmt, null);
+            SnowballDBManager.disconnect(connection, pstmt, resultSet);
         }
-    }
+    } // end of method findAll
 
 } // end of class OutPlayerDao

@@ -4,13 +4,13 @@ import team.snowball.baseball.code.Command;
 import team.snowball.baseball.dto.QueryParseDto;
 import team.snowball.baseball.handler.InvalidInputException;
 import team.snowball.baseball.model.player.OutPlayer;
-import team.snowball.baseball.model.player.Player;
 import team.snowball.baseball.service.OutPlayerService;
 
 import java.util.Map;
 import java.util.function.Function;
 
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;
+import static team.snowball.baseball.controller.PlayerController.getParamId;
 
 /**
  * author         : Jason Lee
@@ -46,26 +46,23 @@ public class OutPlayerController implements ModelController {
             outPlayerService.update(outPlayer);
         }
         if (queryParseDto.getCommand().equals(Command.DELETE)) {
-            outPlayerService.delete();
+            Long id = getParamId.apply(queryParseDto);
+            outPlayerService.delete(id);
         }
         // 여기까지 왔다면 잘못된 명령어를 입력한 케이스
         throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
     }
 
     public static Function<QueryParseDto, OutPlayer> setOutPlayerParams = (queryParseDto) -> {
-        String id = null;
-        String playerId = null;
-        String reason = null;
+        String playerId = "";
+        String reason = "";
 
         try {
             for (Map.Entry<String, String> entry : queryParseDto.getParams().entrySet()) {
-                if (entry.getKey().equals("id")) {
-                    id = entry.getValue();
-                }
-                if (entry.getKey().equals("playerId")) {
+                if (entry.getKey().equals("playerId") && entry.getValue() != null) {
                     playerId = entry.getValue();
                 }
-                if (entry.getKey().equals("reason")) {
+                if (entry.getKey().equals("reason") && entry.getValue() != null) {
                     reason = entry.getValue();
                 }
             }
@@ -73,16 +70,10 @@ public class OutPlayerController implements ModelController {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
 
-        OutPlayer outPlayer = null;
-        try {
-            outPlayer = OutPlayer.builder()
-                    .id(Long.parseLong(id))
-                    .playerId(Long.parseLong(playerId))
+        OutPlayer outPlayer = OutPlayer.builder()
+                    .playerId(Long.valueOf(playerId))
                     .reason(reason)
                     .build();
-        } catch (NumberFormatException | NullPointerException e) {
-            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
-        }
 
         if (outPlayer == null) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());

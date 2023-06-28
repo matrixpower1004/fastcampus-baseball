@@ -10,10 +10,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
-import static team.snowball.baseball.code.ConsoleMessage.*;
-import static team.snowball.baseball.code.ErrorMessage.*;
+import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_DELETE;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_DELETE;
 
 /**
  * author         : Jason Lee
@@ -21,6 +20,19 @@ import static team.snowball.baseball.code.ErrorMessage.*;
  * description    :
  */
 public class PlayerDao implements PlayerRepository {
+
+    private static PlayerDao playerDao;
+
+    private PlayerDao() {
+    }
+
+    public static PlayerDao getInstance() {
+        if (playerDao == null) {
+            playerDao = new PlayerDao();
+        }
+        return playerDao;
+    }
+
     private static final Connection connection = SnowballDBManager.getConnection();
 
     @Override
@@ -40,12 +52,10 @@ public class PlayerDao implements PlayerRepository {
 
             if (result == 1) {
                 connection.commit();
-                System.out.println(MSG_SUCCESS_TO_REGISTER.getMessage());
                 return result;
             }
 
             connection.rollback();
-            System.out.println(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
             return result;
 
         } catch (Exception e) {
@@ -83,8 +93,6 @@ public class PlayerDao implements PlayerRepository {
                 playerList.add(player);
             }
 
-            // TODO: 잊지 말고 나중에 삭제
-            Stream.of(playerList).forEach(System.out::println);
             return playerList;
 
         } catch (Exception e) {
@@ -96,7 +104,7 @@ public class PlayerDao implements PlayerRepository {
     }
 
     @Override
-    public int delete(int id) {
+    public int delete(Long id) {
         PreparedStatement pstmt = null;
         int result = 0;
         try {
@@ -104,17 +112,15 @@ public class PlayerDao implements PlayerRepository {
 
             String sql = "delete from player where id=?";
             pstmt = connection.prepareStatement(sql);
-            pstmt.setInt(1, id);
+            pstmt.setLong(1, id);
 
             result = pstmt.executeUpdate();
             if (result == 1) {
-                System.out.println(MSG_SUCCESS_TO_DELETE.getMessage());
                 connection.commit();
                 return result;
             }
 
             connection.rollback();
-            System.out.println(ERR_MSG_FAILED_TO_DELETE.getErrorMessage());
             return result;
 
         } catch (Exception e) {
