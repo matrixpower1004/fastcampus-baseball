@@ -13,12 +13,11 @@ import java.util.List;
  */
 public class TeamService implements CommandService{
 
-    private final TeamDao teamDao;
+    private static final TeamDao teamDao = new TeamDao();
 
     public static TeamService teamService;
 
     private TeamService() {
-        teamDao = new TeamDao();
     }
 
     public static TeamService getInstance() {
@@ -29,8 +28,7 @@ public class TeamService implements CommandService{
     }
 
     @Override
-    public void create() {
-        Team team = new Team();
+    public void create(Team team) {
         teamDao.insert(team);
     }
 

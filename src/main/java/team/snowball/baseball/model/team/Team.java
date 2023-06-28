@@ -21,4 +21,13 @@ public class Team {
     private String name;
     private Timestamp createdAt;
 
+    @Override
+    public String toString() {
+        return "Team{" +
+                "id=" + id +
+                ", stadiumId=" + stadiumId +
+                ", name='" + name + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }
