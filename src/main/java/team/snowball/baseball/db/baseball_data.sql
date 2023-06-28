@@ -31,3 +31,18 @@ select * from team;
 select * from player;
 select * from out_player;
 
+-- 포지션 별 선수 목록 보기
+SELECT
+    p.position AS 포지션,
+    MAX(CASE WHEN t.name = '서울 키움 히어로즈' THEN p.name ELSE NULL END) AS 키움,
+    MAX(CASE WHEN t.name = '창원 NC 다이노스' THEN p.name ELSE NULL END) AS NC,
+    MAX(CASE WHEN t.name = '서울 LG 트윈스' THEN p.name ELSE NULL END) AS LG
+FROM
+    team t
+        LEFT JOIN
+    player p ON t.id = p.team_id
+WHERE
+        p.position IN ('2루수', '3루수')
+GROUP BY
+    p.position;
+

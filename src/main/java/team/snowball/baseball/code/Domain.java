@@ -19,7 +19,8 @@ public enum Domain {
     STADIUM("야구장", StadiumService::getInstance),
     TEAM("팀", TeamService::getInstance),
     PLAYER("선수", PlayerService::getInstance),
-    OUT_PLAYER("퇴출", OutPlayerService::getInstance);
+    OUT_PLAYER("퇴출", OutPlayerService::getInstance),
+    POSITION_VIEW("포지션별", PositionService::getInstance);
 
     private final String domain;
     private final Supplier<CommandService> commandService;
