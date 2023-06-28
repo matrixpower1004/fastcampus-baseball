@@ -72,7 +72,7 @@ public class TeamDao implements TeamRepository {
     // 팀 전체 조회
     @Override
     public List<Team> findAllTeams() {
-        List<Team> stadiumList = new ArrayList<>();
+        List<Team> teamList = new ArrayList<>();
         PreparedStatement pstmt = null;
         ResultSet resultSet = null;
         try {
@@ -87,10 +87,10 @@ public class TeamDao implements TeamRepository {
                         .name(resultSet.getString("name"))
                         .createdAt(resultSet.getTimestamp("created_at"))
                         .build();
-                stadiumList.add(team);
+                teamList.add(team);
             }
 
-            return stadiumList;
+            return teamList;
 
         } catch (SQLException e) {
             throw new DatabaseException(e.getMessage());
@@ -139,7 +139,7 @@ public class TeamDao implements TeamRepository {
     }
 
 
-    // 업데이트 메세지 논의 후 추가 예정
+    // TODO: 업데이트 메세지 논의 후 추가 예정
     // 팀 업데이트
     @Override
     public int update(Team team) {
