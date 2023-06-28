@@ -12,6 +12,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorMessage {
     ERR_MSG_INVALID_DATABASE("The database has encountered an issue. Please try again"),
+    ERR_MSG_INTERNAL_SERVER("The server has encountered an issue. Please try again"),
     ERR_MSG_INVALID_INPUT("The input is empty or invalid. Please try again."),
     ERR_MSG_INVALID_COMMAND("An uninterpretable command. Please try again."),
     ERR_MSG_DUPLICATE_ID("Duplicate input ID. Please provide a unique ID."),
