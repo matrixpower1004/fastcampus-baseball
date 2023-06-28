@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;
+import static team.snowball.baseball.controller.PlayerController.getParamId;
 
 /**
  * author         : Jason Lee
@@ -45,26 +46,27 @@ public class TeamController implements ModelController {
             teamService.update(team);
         }
         if (queryParseDto.getCommand().equals(Command.DELETE)) {
-            teamService.delete();
+            Long id = getParamId.apply(queryParseDto);
+            teamService.delete(id);
         }
         // 여기까지 왔다면 잘못된 명령어를 입력한 케이스
         throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
     }
 
     public static Function<QueryParseDto, Team> setTeamParams = (queryParseDto) -> {
-        String id = null;
-        String stadiumId = null;
-        String name = null;
+        String id = "";
+        String stadiumId = "";
+        String name = "";
 
         try {
             for (Map.Entry<String, String> entry : queryParseDto.getParams().entrySet()) {
-                if (entry.getKey().equals("id")) {
+                if (entry.getKey().equals("id") && entry.getValue() != null) {
                     id = entry.getValue();
                 }
-                if (entry.getKey().equals("stadiumId")) {
+                if (entry.getKey().equals("stadiumId") && entry.getValue() != null) {
                     stadiumId = entry.getValue();
                 }
-                if (entry.getKey().equals("name")) {
+                if (entry.getKey().equals("name") && entry.getValue() != null) {
                     name = entry.getValue();
                 }
             }
@@ -72,16 +74,11 @@ public class TeamController implements ModelController {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
 
-        Team team = null;
-        try {
-            team = Team.builder()
+        Team team = Team.builder()
                     .id(Long.parseLong(id))
                     .stadiumId(Integer.parseInt(stadiumId))
                     .name(name)
                     .build();
-        } catch (NumberFormatException | NullPointerException e) {
-            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
-        }
 
         if (team == null) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());

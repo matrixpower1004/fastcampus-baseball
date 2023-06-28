@@ -3,7 +3,6 @@ package team.snowball.baseball.controller;
 import team.snowball.baseball.code.Command;
 import team.snowball.baseball.dto.QueryParseDto;
 import team.snowball.baseball.handler.InvalidInputException;
-import team.snowball.baseball.model.player.Player;
 import team.snowball.baseball.model.stadium.Stadium;
 import team.snowball.baseball.service.StadiumService;
 
@@ -11,6 +10,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;
+import static team.snowball.baseball.controller.PlayerController.getParamId;
 
 /**
  * author         : Jason Lee
@@ -51,22 +51,23 @@ public class StadiumController implements ModelController {
             stadiumService.update(stadium);
         }
         if (queryParseDto.getCommand().equals(Command.DELETE)) {
-            stadiumService.delete();
+            Long id = getParamId.apply(queryParseDto);
+            stadiumService.delete(id);
         }
         // 여기까지 왔다면 잘못된 명령어를 입력한 케이스
         throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
     }
 
     public static Function<QueryParseDto, Stadium> setStadiumParams = (queryParseDto) -> {
-        String id = null;
-        String name = null;
+        String id = "";
+        String name = "";
 
         try {
             for (Map.Entry<String, String> entry : queryParseDto.getParams().entrySet()) {
-                if (entry.getKey().equals("id")) {
+                if (entry.getKey().equals("id") && entry.getValue() != null) {
                     id = entry.getValue();
                 }
-                if (entry.getKey().equals("name")) {
+                if (entry.getKey().equals("name") && entry.getValue() != null) {
                     name = entry.getValue();
                 }
             }
@@ -74,15 +75,10 @@ public class StadiumController implements ModelController {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
 
-        Stadium stadium = null;
-        try {
-            stadium = Stadium.builder()
+        Stadium stadium = Stadium.builder()
                     .id(Long.parseLong(id))
                     .name(name)
                     .build();
-        } catch (NumberFormatException | NullPointerException e) {
-            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
-        }
 
         if (stadium == null) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
