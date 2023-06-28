@@ -12,12 +12,11 @@ import java.util.List;
  */
 public class StadiumService implements CommandService {
 
-    private final StadiumDao stadiumDao;
+    private static final StadiumDao stadiumDao = new StadiumDao();
 
     public static StadiumService stadiumService;
 
     private StadiumService() {
-        stadiumDao = new StadiumDao();
     }
 
     public static StadiumService getInstance() {
@@ -28,8 +27,7 @@ public class StadiumService implements CommandService {
     }
 
     @Override
-    public void create() {
-        Stadium stadium = new Stadium();
+    public void create(Stadium stadium) {
         stadiumDao.insert(stadium);
     }
 

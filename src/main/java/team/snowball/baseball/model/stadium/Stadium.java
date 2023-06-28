@@ -20,4 +20,12 @@ public class Stadium {
     private String name;
     private Timestamp createdAt;
 
+    @Override
+    public String toString() {
+        return "Stadium{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", createdAt=" + createdAt +
+                '}';
+    }
 }
