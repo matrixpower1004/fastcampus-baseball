@@ -1,7 +1,5 @@
 package team.snowball.baseball.service;
 
-import team.snowball.baseball.code.Command;
-import team.snowball.baseball.code.Domain;
 import team.snowball.baseball.dto.QueryParseDto;
 import team.snowball.baseball.handler.InputEndException;
 import team.snowball.baseball.handler.InvalidInputException;
@@ -16,7 +14,7 @@ import java.util.stream.Collectors;
 
 import static team.snowball.baseball.code.Command.findByCommandName;
 import static team.snowball.baseball.code.ConsoleMessage.MSG_GUIDE_END;
-import static team.snowball.baseball.code.Domain.*;
+import static team.snowball.baseball.code.Domain.findByDomainName;
 
 /**
  * author         : Jason Lee
@@ -103,5 +101,4 @@ public class InputService {
         final String value = idx > 0 && it.length() > idx + 1 ? it.substring(idx + 1) : null;
         return new HashMap<>(Map.of(key, value));
     }
-
 }
