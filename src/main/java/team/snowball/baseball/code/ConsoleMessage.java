@@ -16,8 +16,9 @@ public enum ConsoleMessage {
     MSG_GUIDE_END("** Press 'end', if you want to exit! **"),
     MSG_END("END"),
     MSG_INPUT_END("END is pressed. Exit this Baseball App."),
-    MSG_SUCCESS_TO_REGISTER("The data registration was successful."),
-    MSG_SUCCESS_TO_DELETE("The deletion of the data was successful");
+    MSG_SUCCESS_TO_REGISTER("The registration of data  was successful."),
+    MSG_SUCCESS_TO_DELETE("The deletion of the data was successful"),
+    MSG_SUCCESS_TO_UPDATE("The update of the data was successful");
 
     private final String message;
 }
