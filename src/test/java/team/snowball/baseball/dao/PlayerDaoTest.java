@@ -15,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class PlayerDaoTest {
 
-    private PlayerRepository playerRepository = new PlayerDao();
+    private static final PlayerRepository REPOSITORY = PlayerDao.getInstance();
 
     // TODO: 인메모리 DB가 아니라서 insert 후 rollback이 되지 않는다. 테스트를 위한 좋은 방법이 없을까?
     @Test
@@ -28,7 +28,7 @@ class PlayerDaoTest {
                 .build();
 
         // When
-        int result = playerRepository.insert(player);
+        int result = REPOSITORY.insert(player);
 
         // Then
         assertThat(result).isEqualTo(1);
@@ -40,7 +40,7 @@ class PlayerDaoTest {
         int teamId = 2;
 
         // When
-        List<Player> playerList = playerRepository.findByTeamId(teamId);
+        List<Player> playerList = REPOSITORY.findByTeamId(teamId);
 
         // Then
         assertThat(playerList.size()).isNotNull();
@@ -50,10 +50,10 @@ class PlayerDaoTest {
     @Test
     void delete_success_test() {
         // Given
-        int id = 35;
+        Long id = 35L;
 
         // When
-        int result = playerRepository.delete(id);
+        int result = REPOSITORY.delete(id);
 
         // Then
         assertThat(result).isEqualTo(1);

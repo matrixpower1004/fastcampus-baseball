@@ -5,6 +5,8 @@ import team.snowball.baseball.dto.OutPlayerRespDto;
 import team.snowball.baseball.model.player.OutPlayer;
 import team.snowball.baseball.model.player.OutPlayerRepository;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -14,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class OutPlayerDaoTest {
 
-    private OutPlayerRepository repository = new OutPlayerDao();
+    private static final OutPlayerRepository REPOSITORY = OutPlayerDao.getInstance();
 
     @Test
     void inset_success_test() {
@@ -26,7 +28,7 @@ class OutPlayerDaoTest {
                 .build();
 
         // When
-        int result = repository.insert(outPlayer);
+        int result = REPOSITORY.insert(outPlayer);
 
         // Then
         assertThat(result).isEqualTo(1);
@@ -37,7 +39,7 @@ class OutPlayerDaoTest {
         // Given
 
         // When
-        OutPlayerRespDto outPlayerRespDto = repository.finalAll();
+        List<OutPlayerRespDto> outPlayerRespDto = REPOSITORY.findAll();
 
         // Then
         assertThat(outPlayerRespDto).isNotNull();
