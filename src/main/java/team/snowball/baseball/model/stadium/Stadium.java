@@ -1,4 +1,4 @@
-package team.snowball.baseball.model;
+package team.snowball.baseball.model.stadium;
 
 import lombok.*;
 import java.sql.Timestamp;
@@ -14,11 +14,10 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Team {
+public class Stadium {
 
     private Long id;
-    private Integer stadiumId;
     private String name;
-    private Timestamp createdA;
+    private Timestamp createdAt;
 
 }
