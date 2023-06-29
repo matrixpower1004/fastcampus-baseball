@@ -14,7 +14,7 @@
 - JUnit 
 
 ### ERD
-<img src="![Untitled](https://github.com/Horaiz-UQ/fastcampus-baseball/assets/116620881/7009aa58-99f9-4b33-a992-bbc36a1d5301)">
+![Untitled](https://github.com/Horaiz-UQ/fastcampus-baseball/assets/116620881/7009aa58-99f9-4b33-a992-bbc36a1d5301)
 
 
 ### 클래스 다이어 그램
