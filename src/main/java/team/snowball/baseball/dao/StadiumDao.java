@@ -11,10 +11,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_DELETE;
-import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_REGISTER;
-import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_DELETE;
-import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_REGISTER;
+import static team.snowball.baseball.code.ConsoleMessage.*;
+import static team.snowball.baseball.code.ErrorMessage.*;
 
 /**
  * author         : Yongwon Kim
@@ -100,7 +98,7 @@ public class StadiumDao implements StadiumRepository {
 
     // 삭제
     @Override
-    public int delete(int id) {
+    public int delete(Long id) {
         PreparedStatement pstmt = null;
         int result = 0;
         try {
@@ -108,7 +106,7 @@ public class StadiumDao implements StadiumRepository {
 
             String query = "DELETE FROM stadium WHERE id=?";
             pstmt = connection.prepareStatement(query);
-            pstmt.setInt(1, id);
+            pstmt.setLong(1, id);
 
             result = pstmt.executeUpdate();
 
@@ -137,7 +135,6 @@ public class StadiumDao implements StadiumRepository {
     }
 
 
-    // TODO: 업데이트 메세지 논의 후 추가 or 삭제 예정
     // 업데이트
     @Override
     public int update(Stadium stadium) {
@@ -155,10 +152,10 @@ public class StadiumDao implements StadiumRepository {
 
             if (result == 1) {
                 connection.commit();
-                System.out.println("업데이트 성공");
+                System.out.println(MSG_SUCCESS_TO_UPDATE.getMessage());
             } else {
                 connection.rollback();
-                System.out.println("업데이트 실패");
+                System.out.println(ERR_MSG_FAILED_TO_UPDATE.getErrorMessage());
             }
 
         } catch (SQLException e) {

@@ -14,7 +14,7 @@ public interface StadiumRepository {
 
     List<Stadium> findAllStadiums();
 
-    int delete(int id);
+    int delete(Long id);
 
     int update(Stadium stadium);
 
