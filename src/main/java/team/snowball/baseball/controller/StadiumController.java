@@ -3,7 +3,6 @@ package team.snowball.baseball.controller;
 import team.snowball.baseball.code.Command;
 import team.snowball.baseball.dto.QueryParseDto;
 import team.snowball.baseball.handler.InvalidInputException;
-import team.snowball.baseball.model.player.Player;
 import team.snowball.baseball.model.stadium.Stadium;
 import team.snowball.baseball.service.StadiumService;
 
@@ -76,16 +75,24 @@ public class StadiumController implements ModelController {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
 
+        Long StadiumId;
+        try {
+            StadiumId = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            StadiumId = null;
+        }
+
         Stadium stadium = Stadium.builder()
-                .id(Long.parseLong(id))
+                .id(StadiumId)
                 .name(name)
                 .build();
 
-        if (stadium == null) {
-            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
-        }
 
-        return stadium;
+       if (stadium == null) {
+           throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
+       }
+
+       return stadium;
     };
 
 }
