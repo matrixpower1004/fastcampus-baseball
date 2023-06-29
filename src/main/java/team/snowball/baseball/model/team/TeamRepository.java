@@ -13,7 +13,7 @@ public interface TeamRepository {
 
     List<Team> findAllTeams();
 
-    int delete(int id);
+    int delete(Long id);
 
     int update(Team team);
 

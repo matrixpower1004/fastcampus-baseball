@@ -11,10 +11,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_DELETE;
-import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_REGISTER;
-import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_DELETE;
-import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_REGISTER;
+import static team.snowball.baseball.code.ConsoleMessage.*;
+import static team.snowball.baseball.code.ErrorMessage.*;
 
 /**
  * author         : Yongwon Kim
@@ -102,7 +100,7 @@ public class TeamDao implements TeamRepository {
 
     // 팀 삭제
     @Override
-    public int delete(int id) {
+    public int delete(Long id) {
         PreparedStatement pstmt = null;
         int result = 0;
         try {
@@ -110,7 +108,7 @@ public class TeamDao implements TeamRepository {
 
             String query = "DELETE FROM team WHERE id=?";
             pstmt = connection.prepareStatement(query);
-            pstmt.setInt(1, id);
+            pstmt.setLong(1, id);
 
             result = pstmt.executeUpdate();
 
@@ -138,8 +136,6 @@ public class TeamDao implements TeamRepository {
         }
     }
 
-
-    // TODO: 업데이트 메세지 논의 후 추가 예정
     // 팀 업데이트
     @Override
     public int update(Team team) {
@@ -157,10 +153,10 @@ public class TeamDao implements TeamRepository {
 
             if (result == 1) {
                 connection.commit();
-                System.out.println("업데이트 성공");
+                System.out.println(MSG_SUCCESS_TO_UPDATE.getMessage());
             } else {
                 connection.rollback();
-                System.out.println("업데이트 실패");
+                System.out.println(ERR_MSG_FAILED_TO_UPDATE.getErrorMessage());
             }
 
         } catch (SQLException e) {
