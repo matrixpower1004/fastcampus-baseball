@@ -14,7 +14,7 @@
 - JUnit 
 
 ### ERD
-<img src="C:\Users\PC\Downloads\Untitled.png">
+<img src=".\C:\Users\PC\Downloads\Untitled.png">
 
 ### 클래스 다이어 그램
 #### \<Model>
