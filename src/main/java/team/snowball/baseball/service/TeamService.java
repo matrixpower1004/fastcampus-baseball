@@ -11,14 +11,13 @@ import java.util.List;
  * date           : 2023-06-28
  * description    :
  */
-public class TeamService implements CommandService{
+public class TeamService{
 
-    private final TeamDao teamDao;
+    private static final TeamDao teamDao = new TeamDao();
 
     public static TeamService teamService;
 
     private TeamService() {
-        teamDao = new TeamDao();
     }
 
     public static TeamService getInstance() {
@@ -28,13 +27,10 @@ public class TeamService implements CommandService{
         return teamService;
     }
 
-    @Override
-    public void create() {
-        Team team = new Team();
+    public void create(Team team) {
         teamDao.insert(team);
     }
 
-    @Override
     public void read() {
         List<Team> teamList = teamDao.findAllTeams();
         for (Team team : teamList) {
@@ -42,14 +38,12 @@ public class TeamService implements CommandService{
         }
     }
 
-    @Override
-    public void update() {
-        System.out.println("수정");
+    public void update(Team team) {
+        teamDao.update(team);
     }
 
-    @Override
-    public void delete() {
-        System.out.println("삭제");
+    public void delete(Long id) {
+        teamDao.delete(id);
     }
 
 

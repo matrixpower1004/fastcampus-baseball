@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;
-import static team.snowball.baseball.controller.PlayerController.getParamId;
+
 
 /**
  * author         : Jason Lee
@@ -46,7 +46,8 @@ public class TeamController implements ModelController {
             teamService.update(team);
         }
         if (queryParseDto.getCommand().equals(Command.DELETE)) {
-            Long id = getParamId.apply(queryParseDto);
+            Team team = setTeamParams.apply(queryParseDto);
+            Long id = team.getId();
             teamService.delete(id);
         }
         // 여기까지 왔다면 잘못된 명령어를 입력한 케이스
@@ -74,8 +75,15 @@ public class TeamController implements ModelController {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
 
+        Long TeamId;
+        try {
+            TeamId = Long.parseLong(id);
+        } catch (NumberFormatException e) {
+            TeamId = null;
+        }
+
         Team team = Team.builder()
-                    .id(Long.parseLong(id))
+                    .id(TeamId)
                     .stadiumId(Integer.parseInt(stadiumId))
                     .name(name)
                     .build();
