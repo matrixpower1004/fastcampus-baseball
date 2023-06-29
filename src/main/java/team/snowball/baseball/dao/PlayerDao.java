@@ -11,7 +11,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_DELETE;
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_DELETE;
 
 /**
@@ -65,9 +64,8 @@ public class PlayerDao implements PlayerRepository {
                 System.out.println(e.getMessage());
                 throw new DatabaseException();
             }
-        } finally {
-            SnowballDBManager.disconnect(connection, pstmt, null);
         }
+
         return result;
     }
 
@@ -98,8 +96,6 @@ public class PlayerDao implements PlayerRepository {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new DatabaseException();
-        } finally {
-            SnowballDBManager.disconnect(connection, pstmt, resultSet);
         }
     }
 
@@ -115,6 +111,7 @@ public class PlayerDao implements PlayerRepository {
             pstmt.setLong(1, id);
 
             result = pstmt.executeUpdate();
+
             if (result == 1) {
                 connection.commit();
                 return result;
@@ -130,11 +127,8 @@ public class PlayerDao implements PlayerRepository {
                 System.out.println(e.getMessage());
                 throw new DatabaseException(ERR_MSG_FAILED_TO_DELETE.getErrorMessage());
             }
-            System.out.println(e.getMessage());
-            throw new DatabaseException();
-        } finally {
-            SnowballDBManager.disconnect(connection, pstmt, null);
         }
+        return result;
     }
 
 } // end of class PlayerDao
