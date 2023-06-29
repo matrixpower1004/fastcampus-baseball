@@ -6,10 +6,12 @@ import team.snowball.baseball.model.player.Player;
 import team.snowball.baseball.model.player.PlayerRepository;
 
 import java.util.List;
-import java.util.stream.Stream;
 
-import static team.snowball.baseball.code.ConsoleMessage.*;
-import static team.snowball.baseball.code.ErrorMessage.*;
+import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_DELETE;
+import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_REGISTER;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_DELETE;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_REGISTER;
+import static team.snowball.baseball.view.Report.showPlayerByTeam;
 
 /**
  * author         : Jason Lee
@@ -41,7 +43,7 @@ public class PlayerService {
 
     public void read(int id) {
         List<Player> playerList = REPOSITORY.findByTeamId(id);
-
+        showPlayerByTeam(playerList);
         // Todo: 여기서부터 작업
     }
 
