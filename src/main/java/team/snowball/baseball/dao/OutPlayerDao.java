@@ -12,9 +12,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_REGISTER;
-import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_FIND;
-import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_REGISTER;
+import static team.snowball.baseball.code.ErrorMessage.*;
 
 /**
  * author         : Jason Lee
@@ -24,7 +22,7 @@ import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_REGISTE
 public class OutPlayerDao implements OutPlayerRepository {
 
     private static OutPlayerDao outPlayerDao;
-
+    private static final Connection connection = SnowballDBManager.getConnection();
     private OutPlayerDao() {
     }
 
@@ -34,8 +32,6 @@ public class OutPlayerDao implements OutPlayerRepository {
         }
         return outPlayerDao;
     }
-
-    private static final Connection connection = SnowballDBManager.getConnection();
 
     @Override
     public int insert(OutPlayer outPlayer) {
@@ -54,15 +50,16 @@ public class OutPlayerDao implements OutPlayerRepository {
             // 1. 퇴출 선수 등륵을 진행
             String sql = "INSERT INTO out_player(player_id, reason, created_at) VALUES (?, ?, now())";
             pstmt = connection.prepareStatement(sql);
+
             // player table update에도 사용해야 하니 변수로 선언하자
             final Long playerId = outPlayer.getPlayerId();
+
             pstmt.setLong(1, playerId);
             pstmt.setString(2, outPlayer.getReason());
 
             // insert 결과가 1건이 아니라면 실패.
             if (pstmt.executeUpdate() != 1) {
                 connection.rollback();
-                System.out.println(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
                 return result;
             }
 
@@ -70,6 +67,7 @@ public class OutPlayerDao implements OutPlayerRepository {
 
             // 2. player테이블의 해당 선수 teamId를 null로 update.
             sql = "update player set team_id=null where id=?";
+
             pstmt = connection.prepareStatement(sql);
             pstmt.setLong(1, playerId);
 
@@ -78,12 +76,10 @@ public class OutPlayerDao implements OutPlayerRepository {
             if (result == 1) {
                 // 2단계 까지 성공했다면 commit.
                 connection.commit();
-                System.out.println(MSG_SUCCESS_TO_REGISTER.getMessage());
                 return result;
             }
 
             connection.rollback();
-            System.out.println(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
             return result;
 
         } catch (Exception e) {
@@ -93,10 +89,8 @@ public class OutPlayerDao implements OutPlayerRepository {
                 System.out.println(e.getMessage());
                 throw new DatabaseException(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
             }
-
-        } finally {
-            SnowballDBManager.disconnect(connection, pstmt, null);
         }
+
         return result;
     }
 
@@ -114,9 +108,9 @@ public class OutPlayerDao implements OutPlayerRepository {
             resultSet = pstmt.executeQuery();
 
             List<OutPlayerRespDto> outPlayerList = new ArrayList<>();
-            OutPlayerRespDto outPlayerRespDto = null;
+
             while (resultSet.next()) {
-                outPlayerRespDto = OutPlayerRespDto.builder()
+                OutPlayerRespDto outPlayerRespDto = OutPlayerRespDto.builder()
                         .id(resultSet.getLong("id"))
                         .name(resultSet.getString("name"))
                         .position(resultSet.getString("position"))
@@ -135,8 +129,6 @@ public class OutPlayerDao implements OutPlayerRepository {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new DatabaseException(ERR_MSG_FAILED_TO_FIND.getErrorMessage());
-        } finally {
-            SnowballDBManager.disconnect(connection, pstmt, resultSet);
         }
     } // end of method findAll
 

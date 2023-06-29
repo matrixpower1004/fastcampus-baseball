@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;
-import static team.snowball.baseball.controller.PlayerController.getParamId;
 
 /**
  * author         : Jason Lee

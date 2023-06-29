@@ -45,7 +45,9 @@ public class PlayerController implements ModelController {
         }
         if (queryParseDto.getCommand().equals(Command.READ)) {
             Player player = getPlayerParams.apply(queryParseDto);
-            playerService.read(player.getTeamId());
+            int teamId = player.getTeamId();
+            System.out.println(teamId);
+            playerService.read(teamId);
         }
         if (queryParseDto.getCommand().equals(Command.PUT)) {
             Player player = getPlayerParams.apply(queryParseDto);
@@ -94,22 +96,22 @@ public class PlayerController implements ModelController {
         return player;
     };
 
-    public static Function<QueryParseDto, Long> getParamId = (queryParseDto) -> {
-        String id = "";
-        try {
-            for (Map.Entry<String, String> entry : queryParseDto.getParams().entrySet()) {
-                if (entry.getKey().equals("id") && entry.getValue() != null ) {
-                    id = entry.getValue();
-                }
-            }
-        } catch (IllegalStateException e) {
-            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
-        }
-
-        if (id.isEmpty()) {
-            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
-        }
-
-        return Long.valueOf(id);
-    };
+//    public static Function<QueryParseDto, Long> getParamId = (queryParseDto) -> {
+//        String id = "";
+//        try {
+//            for (Map.Entry<String, String> entry : queryParseDto.getParams().entrySet()) {
+//                if (entry.getKey().equals("id") && entry.getValue() != null ) {
+//                    id = entry.getValue();
+//                }
+//            }
+//        } catch (IllegalStateException e) {
+//            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
+//        }
+//
+//        if (id.isEmpty()) {
+//            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
+//        }
+//
+//        return Long.valueOf(id);
+//    };
 }
