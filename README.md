@@ -11,9 +11,9 @@
 
 ### 사용 언어 및 기술스택
 - Java 17
-- MySQL Connector
+- MySQL DB
 - AssertJ
-- JUnit 
+- JUnit
 
 ### ERD
 ![Untitled](https://github.com/Horaiz-UQ/fastcampus-baseball/assets/116620881/7009aa58-99f9-4b33-a992-bbc36a1d5301)
