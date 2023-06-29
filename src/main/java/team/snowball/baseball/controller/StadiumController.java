@@ -3,6 +3,7 @@ package team.snowball.baseball.controller;
 import team.snowball.baseball.code.Command;
 import team.snowball.baseball.dto.QueryParseDto;
 import team.snowball.baseball.handler.InvalidInputException;
+import team.snowball.baseball.model.player.Player;
 import team.snowball.baseball.model.stadium.Stadium;
 import team.snowball.baseball.service.StadiumService;
 
@@ -10,7 +11,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;
-import static team.snowball.baseball.controller.PlayerController.getParamId;
 
 /**
  * author         : Jason Lee
@@ -51,7 +51,8 @@ public class StadiumController implements ModelController {
             stadiumService.update(stadium);
         }
         if (queryParseDto.getCommand().equals(Command.DELETE)) {
-            Long id = getParamId.apply(queryParseDto);
+            Stadium stadium = setStadiumParams.apply(queryParseDto);
+            Long id = stadium.getId();
             stadiumService.delete(id);
         }
         // 여기까지 왔다면 잘못된 명령어를 입력한 케이스
@@ -76,9 +77,9 @@ public class StadiumController implements ModelController {
         }
 
         Stadium stadium = Stadium.builder()
-                    .id(Long.parseLong(id))
-                    .name(name)
-                    .build();
+                .id(Long.parseLong(id))
+                .name(name)
+                .build();
 
         if (stadium == null) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
@@ -86,4 +87,5 @@ public class StadiumController implements ModelController {
 
         return stadium;
     };
+
 }
