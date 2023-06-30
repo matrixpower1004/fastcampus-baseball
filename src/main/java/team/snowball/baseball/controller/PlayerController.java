@@ -57,9 +57,6 @@ public class PlayerController implements ModelController {
             Long id = getParamId.apply(queryParseDto);
             playerService.delete(id);
         }
-        // 여기까지 왔다면 잘못된 명령어를 입력한 케이스
-        throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
-
     }
 
     private Function<QueryParseDto, Player> getPlayerParams = (queryParseDto) -> {
@@ -84,10 +81,10 @@ public class PlayerController implements ModelController {
         }
 
         Player player = Player.builder()
-                    .teamId(Integer.valueOf(teamId))
-                    .name(name)
-                    .position(position)
-                    .build();
+                .teamId(Integer.valueOf(teamId))
+                .name(name)
+                .position(position)
+                .build();
 
         if (player == null) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
@@ -95,23 +92,4 @@ public class PlayerController implements ModelController {
 
         return player;
     };
-
-//    public static Function<QueryParseDto, Long> getParamId = (queryParseDto) -> {
-//        String id = "";
-//        try {
-//            for (Map.Entry<String, String> entry : queryParseDto.getParams().entrySet()) {
-//                if (entry.getKey().equals("id") && entry.getValue() != null ) {
-//                    id = entry.getValue();
-//                }
-//            }
-//        } catch (IllegalStateException e) {
-//            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
-//        }
-//
-//        if (id.isEmpty()) {
-//            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
-//        }
-//
-//        return Long.valueOf(id);
-//    };
 }

@@ -2,6 +2,8 @@ package team.snowball.baseball.view;
 
 import team.snowball.baseball.dto.OutPlayerRespDto;
 import team.snowball.baseball.model.player.Player;
+import team.snowball.baseball.model.stadium.Stadium;
+import team.snowball.baseball.model.team.Team;
 
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -24,12 +26,15 @@ public class Report {
                 convert("reason", 8),
                 convert("outDate", 12)));
         sb.append("---------------------------------------------------\n");
+
+        String dateStr = "";
         for (OutPlayerRespDto list : outPlayerList) {
-            String dateStr = "";
             if (list.getOutDate() != null) {
                 dateStr = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                         .withZone(ZoneId.systemDefault())
                         .format(list.getOutDate().toInstant());
+            } else {
+                dateStr = "";
             }
             sb.append(String.format("%6d%s%s%s%s\n", list.getId(),
                     convert(list.getName(), 10),
@@ -64,6 +69,50 @@ public class Report {
         System.out.println(sb);
     }
 
+    public static void showStadiumList(List<Stadium> stadiumList) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("-------------------------------------------\n");
+        sb.append(String.format("%s%s%s\n",
+                convert("id", 6),
+                convert("name", 20),
+                convert("createdAt", 12)));
+        sb.append("-------------------------------------------\n");
+        for (Stadium list : stadiumList) {
+            String dateStr = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    .withZone(ZoneId.systemDefault())
+                    .format(list.getCreatedAt().toInstant());
+            sb.append(String.format("%6d%s%s\n",
+                    list.getId(),
+                    convert(list.getName(), 20),
+                    convert(dateStr, 12)));
+        }
+        sb.append("-------------------------------------------\n");
+        System.out.println(sb);
+    }
+
+    public static void showTeamList(List<Team> teamList) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("-------------------------------------------\n");
+        sb.append(String.format("%s%s%ss%s\n",
+                convert("id", 6),
+                convert("StadiumId", 13),
+                convert("name", 15),
+                convert("createdAt", 12)));
+        sb.append("-------------------------------------------\n");
+        for (Team list : teamList) {
+            String dateStr = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                    .withZone(ZoneId.systemDefault())
+                    .format(list.getCreatedAt().toInstant());
+            sb.append(String.format("%6d%13d%s%s\n",
+                    list.getId(),
+                    list.getStadiumId(),
+                    convert(list.getName(), 15),
+                    convert(dateStr, 12)));
+        }
+        sb.append("-------------------------------------------\n");
+        System.out.println(sb);
+    }
+
     // 전각문자(한글)의 개수만큼 문자열의 길이을 빼주는 메서드
     private static String convert(String word, int size) {
         String formatter = String.format("%%%ds", size - getKorCnt(word));
@@ -72,13 +121,13 @@ public class Report {
 
     // Unicode(한글)의 개수를 구하는 메서드
     private static int getKorCnt(String it) {
-        int cnt = 0;
+        int count = 0;
         for (int i = 0; i < it.length(); i++) {
             if (Character.getType(it.charAt(i)) == Character.OTHER_LETTER) {
-                cnt++;
+                count++;
             }
         }
-        return cnt;
+        return count;
     }
 
 }

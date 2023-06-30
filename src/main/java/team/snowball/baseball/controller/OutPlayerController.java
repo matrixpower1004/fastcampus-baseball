@@ -48,8 +48,6 @@ public class OutPlayerController implements ModelController {
             Long id = getParamId.apply(queryParseDto);
             outPlayerService.delete(id);
         }
-        // 여기까지 왔다면 잘못된 명령어를 입력한 케이스
-        throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
     }
 
     public static Function<QueryParseDto, OutPlayer> setOutPlayerParams = (queryParseDto) -> {

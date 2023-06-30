@@ -9,7 +9,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_DELETE;
 
@@ -21,6 +23,7 @@ import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_DELETE;
 public class PlayerDao implements PlayerRepository {
 
     private static PlayerDao playerDao;
+    private static final Connection CONNECTION = SnowballDBManager.getConnection();
 
     private PlayerDao() {
     }
@@ -32,17 +35,17 @@ public class PlayerDao implements PlayerRepository {
         return playerDao;
     }
 
-    private static final Connection connection = SnowballDBManager.getConnection();
+
 
     @Override
     public int insert(Player player) {
         PreparedStatement pstmt = null;
         int result = 0;
         try {
-            connection.setAutoCommit(false);
+            CONNECTION.setAutoCommit(false);
 
             String sql = "INSERT INTO player(team_id, name, position, created_at) VALUES (?, ?, ?, now())";
-            pstmt = connection.prepareStatement(sql);
+            pstmt = CONNECTION.prepareStatement(sql);
             pstmt.setInt(1, player.getTeamId());
             pstmt.setString(2, player.getName());
             pstmt.setString(3, player.getPosition());
@@ -50,16 +53,16 @@ public class PlayerDao implements PlayerRepository {
             result = pstmt.executeUpdate();
 
             if (result == 1) {
-                connection.commit();
+                CONNECTION.commit();
                 return result;
             }
 
-            connection.rollback();
+            CONNECTION.rollback();
             return result;
 
         } catch (Exception e) {
             try {
-                connection.rollback();
+                CONNECTION.rollback();
             } catch (SQLException ex) {
                 System.out.println(e.getMessage());
                 throw new DatabaseException();
@@ -76,7 +79,7 @@ public class PlayerDao implements PlayerRepository {
         List<Player> playerList = new ArrayList<>();
         try {
             String sql = "SELECT * FROM player WHERE team_id = ?";
-            pstmt = connection.prepareStatement(sql);
+            pstmt = CONNECTION.prepareStatement(sql);
             pstmt.setInt(1, id);
             resultSet = pstmt.executeQuery();
 
@@ -104,25 +107,25 @@ public class PlayerDao implements PlayerRepository {
         PreparedStatement pstmt = null;
         int result = 0;
         try {
-            connection.setAutoCommit(false);
+            CONNECTION.setAutoCommit(false);
 
             String sql = "delete from player where id=?";
-            pstmt = connection.prepareStatement(sql);
+            pstmt = CONNECTION.prepareStatement(sql);
             pstmt.setLong(1, id);
 
             result = pstmt.executeUpdate();
 
             if (result == 1) {
-                connection.commit();
+                CONNECTION.commit();
                 return result;
             }
 
-            connection.rollback();
+            CONNECTION.rollback();
             return result;
 
         } catch (Exception e) {
             try {
-                connection.rollback();
+                CONNECTION.rollback();
             } catch (SQLException ex) {
                 System.out.println(e.getMessage());
                 throw new DatabaseException(ERR_MSG_FAILED_TO_DELETE.getErrorMessage());
@@ -131,4 +134,60 @@ public class PlayerDao implements PlayerRepository {
         return result;
     }
 
-} // end of class PlayerDao
+    @Override
+    public void findLineByPosition() {
+
+        PreparedStatement pstmt = null;
+        ResultSet resultSet = null;
+//        List<PositionRespDto> positionByList = new ArrayList<>();
+        Map<Integer, String> teamMap = new HashMap<>();
+
+        try {
+            // 2번에 걸쳐서 작업해 보자. 첫 작업에서 team_id와 team_name을 매핑시킨다.
+            String sql1 = "select id, " +
+                    "SUBSTRING_INDEX(SUBSTRING_INDEX(name, \" \", 2), \" \", -1)" +
+                    "from team";
+            pstmt = CONNECTION.prepareStatement(sql1);
+            resultSet = pstmt.executeQuery();
+
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString(2);
+                teamMap.put(id, name);
+            }
+
+            // 여기까진 통과
+            System.out.println(teamMap);
+
+            // 2차 작업
+            String sql = "select p.position, " +
+                    "max(case when p.team_id = ? then p.name else '' end) as ? " +
+                    "FROM player p " +
+                    "LEFT JOIN team t ON p.team_id = t.id " +
+                    "GROUP BY p.position " +
+                    "ORDER BY p.position";
+
+            pstmt = CONNECTION.prepareStatement(sql);
+
+            int count = 1;
+            for (Map.Entry<Integer, String> map : teamMap.entrySet()) {
+                pstmt.setInt(1, map.getKey());
+                System.out.println("put : " + map.getKey());
+                String name = "team" + count;
+                pstmt.setString(2, name);
+                count++;
+            }
+
+            resultSet = pstmt.executeQuery();
+
+            while (resultSet.next()) {
+                System.out.println(resultSet.getString("position"));
+                System.out.println(resultSet.getString("team3"));
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new DatabaseException(ERR_MSG_FAILED_TO_DELETE.getErrorMessage());
+        }
+
+    } // end of class PlayerDao
+}

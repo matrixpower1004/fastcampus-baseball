@@ -46,24 +46,17 @@ public class TeamController implements ModelController {
             teamService.update(team);
         }
         if (queryParseDto.getCommand().equals(Command.DELETE)) {
-            Team team = setTeamParams.apply(queryParseDto);
-            Long id = team.getId();
+            Long id = getParamId.apply(queryParseDto);
             teamService.delete(id);
         }
-        // 여기까지 왔다면 잘못된 명령어를 입력한 케이스
-        throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
     }
 
     public static Function<QueryParseDto, Team> setTeamParams = (queryParseDto) -> {
-        String id = "";
         String stadiumId = "";
         String name = "";
 
         try {
             for (Map.Entry<String, String> entry : queryParseDto.getParams().entrySet()) {
-                if (entry.getKey().equals("id") && entry.getValue() != null) {
-                    id = entry.getValue();
-                }
                 if (entry.getKey().equals("stadiumId") && entry.getValue() != null) {
                     stadiumId = entry.getValue();
                 }
@@ -75,18 +68,10 @@ public class TeamController implements ModelController {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
 
-        Long TeamId;
-        try {
-            TeamId = Long.parseLong(id);
-        } catch (NumberFormatException e) {
-            TeamId = null;
-        }
-
         Team team = Team.builder()
-                    .id(TeamId)
-                    .stadiumId(Integer.parseInt(stadiumId))
-                    .name(name)
-                    .build();
+                .stadiumId(Integer.parseInt(stadiumId))
+                .name(name)
+                .build();
 
         if (team == null) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());

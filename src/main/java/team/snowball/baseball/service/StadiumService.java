@@ -5,14 +5,16 @@ import team.snowball.baseball.model.stadium.Stadium;
 
 import java.util.List;
 
+import static team.snowball.baseball.view.Report.showStadiumList;
+
 /**
  * author         : Yongwon Kim
  * date           : 2023-06-28
  * description    :
  */
-public class StadiumService{
+public class StadiumService {
 
-    private static final StadiumDao stadiumDao = new StadiumDao();
+    private static final StadiumDao stadiumDao = StadiumDao.getInstance();
 
     public static StadiumService stadiumService;
 
@@ -32,9 +34,7 @@ public class StadiumService{
 
     public void read() {
         List<Stadium> stadiums = stadiumDao.findAllStadiums();
-        for (Stadium stadium : stadiums) {
-            System.out.println(stadium);
-        }
+        showStadiumList(stadiums);
     }
 
     public void update(Stadium stadium) {
