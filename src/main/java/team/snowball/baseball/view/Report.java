@@ -16,6 +16,55 @@ import java.util.List;
  */
 public class Report {
 
+    public static void showStadium(List<Stadium> stadiumList) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("---------------------------------------------------\n");
+        sb.append(String.format("%s%s%sn",
+                convert("ID", 6),
+                convert("name", 10),
+                convert("creatAt", 12)));
+        sb.append("\n---------------------------------------------------\n");
+        for (Stadium list : stadiumList) {
+            String dateStr = "";
+            if (list.getCreatedAt() != null) {
+                dateStr = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        .withZone(ZoneId.systemDefault())
+                        .format(list.getCreatedAt().toInstant());
+            }
+            sb.append(String.format("%3d%13벼s%s\n", list.getId(),
+                    convert(list.getName(), 10),
+                    convert(dateStr, 12)));
+        }
+        sb.append("---------------------------------------------------\n");
+        System.out.println(sb);
+    }
+
+    public static void showTeam(List<Team> teamList) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("---------------------------------------------------\n");
+        sb.append(String.format("%s%s%s%sn",
+                convert("ID",6),
+                convert("Stadium_id", 13),
+                convert("name", 10),
+                convert("creatAt", 12)));
+        sb.append("\n---------------------------------------------------\n");
+        for (Team list : teamList) {
+            String dateStr = "";
+            if (list.getCreatedAt() != null) {
+                dateStr = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+                        .withZone(ZoneId.systemDefault())
+                        .format(list.getCreatedAt().toInstant());
+            }
+            sb.append(String.format("%6d%8d%13s%s\n", list.getId(),
+                    list.getStadiumId(),
+                    convert(list.getName(), 10),
+                    convert(dateStr, 12)));
+        }
+        sb.append("---------------------------------------------------\n");
+        System.out.println(sb);
+    }
+
+
     public static void showOutPlayer(List<OutPlayerRespDto> outPlayerList) {
         StringBuilder sb = new StringBuilder();
         sb.append("---------------------------------------------------\n");

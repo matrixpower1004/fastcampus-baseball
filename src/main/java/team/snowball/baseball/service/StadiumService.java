@@ -2,6 +2,7 @@ package team.snowball.baseball.service;
 
 import team.snowball.baseball.dao.StadiumDao;
 import team.snowball.baseball.model.stadium.Stadium;
+import team.snowball.baseball.view.Report;
 
 import java.util.List;
 

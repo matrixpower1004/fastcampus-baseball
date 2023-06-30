@@ -3,6 +3,7 @@ package team.snowball.baseball.service;
 
 import team.snowball.baseball.dao.TeamDao;
 import team.snowball.baseball.model.team.Team;
+import team.snowball.baseball.view.Report;
 
 import java.util.List;
 
