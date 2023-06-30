@@ -63,8 +63,6 @@ public class OutPlayerDao implements OutPlayerRepository {
                 return result;
             }
 
-            System.out.println("퇴출 선수 등록");
-
             // 2. player테이블의 해당 선수 teamId를 null로 update.
             sql = "update player set team_id=null where id=?";
 
@@ -90,7 +88,6 @@ public class OutPlayerDao implements OutPlayerRepository {
                 throw new DatabaseException(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
             }
         }
-
         return result;
     }
 

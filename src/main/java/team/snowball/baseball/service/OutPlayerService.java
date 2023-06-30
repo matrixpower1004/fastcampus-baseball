@@ -37,10 +37,8 @@ public class OutPlayerService {
         if (outPlayer == null) {
             throw new InternalServerErrorException();
         }
-        if (REPOSITORY.insert(outPlayer) == 1) {
-            System.out.println(MSG_SUCCESS_TO_REGISTER.getMessage());
-        }
-        System.out.println(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
+        System.out.println(REPOSITORY.insert(outPlayer) == 1 ?
+                MSG_SUCCESS_TO_REGISTER.getMessage() : ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
     }
 
     public void read() {

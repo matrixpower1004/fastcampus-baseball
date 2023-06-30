@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * description    :
  */
 class StadiumDAOTest {
-    private StadiumRepository stadiumRepository = new StadiumDao();
+    private StadiumRepository stadiumRepository = StadiumDao.getInstance();
 
     @Test
     void inset_test() {
@@ -44,7 +44,7 @@ class StadiumDAOTest {
     @Test
     void delete_test() {
         // Given
-        int id = 28;
+        Long id = 28L;
 
         // When
         int result = stadiumRepository.delete(id);

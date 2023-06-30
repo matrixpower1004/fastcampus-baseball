@@ -7,10 +7,8 @@ import team.snowball.baseball.model.player.PlayerRepository;
 
 import java.util.List;
 
-import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_DELETE;
-import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_REGISTER;
-import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_DELETE;
-import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_REGISTER;
+import static team.snowball.baseball.code.ConsoleMessage.*;
+import static team.snowball.baseball.code.ErrorMessage.*;
 import static team.snowball.baseball.view.Report.showPlayerByTeam;
 
 /**
@@ -35,16 +33,13 @@ public class PlayerService {
         if (player == null) {
             throw new InternalServerErrorException();
         }
-        if (REPOSITORY.insert(player) == 1) {
-            System.out.println(MSG_SUCCESS_TO_REGISTER.getMessage());
-        }
-        System.out.println(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
+        System.out.println(REPOSITORY.insert(player) == 1 ?
+                MSG_SUCCESS_TO_REGISTER.getMessage() : ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
     }
 
     public void read(int id) {
         List<Player> playerList = REPOSITORY.findByTeamId(id);
         showPlayerByTeam(playerList);
-        // Todo: 여기서부터 작업
     }
 
     public void update(Player player) {
@@ -52,12 +47,13 @@ public class PlayerService {
     }
 
     public void delete(Long id) {
-        if (REPOSITORY.delete(id) == 1) {
-            System.out.println(MSG_SUCCESS_TO_DELETE.getMessage());
+        if (REPOSITORY.delete(id) != 1) {
+            System.out.println(ERR_MSG_FAILED_TO_DELETE.getErrorMessage());
         }
-        System.out.println(ERR_MSG_FAILED_TO_DELETE.getErrorMessage());
+        System.out.println(MSG_SUCCESS_TO_DELETE.getMessage());
     }
 
     public void positionByReport() {
+        REPOSITORY.findLineByPosition();
     }
 }

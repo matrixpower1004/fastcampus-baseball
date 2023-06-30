@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * description    :
  */
 class TeamDAOTest {
-    private TeamRepository teamRepository = new TeamDao();
+    private TeamRepository teamRepository = TeamDao.getInstance();
 
     @Test
     void inset_test() {
