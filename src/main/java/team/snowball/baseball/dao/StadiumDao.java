@@ -21,49 +21,52 @@ import static team.snowball.baseball.code.ErrorMessage.*;
  */
 public class StadiumDao implements StadiumRepository {
 
-    private Connection connection;
+    private static final Connection CONNECTION = SnowballDBManager.getConnection();;
 
-    public StadiumDao() {
-        connection = SnowballDBManager.getConnection();
+    private static StadiumDao stadiumDao;
+    private StadiumDao() {
     }
 
+    public static StadiumDao getInstance() {
+        if (stadiumDao == null) {
+            stadiumDao = new StadiumDao();
+        }
+        return stadiumDao;
+    }
     // 야구장 등록
     @Override
     public int insert(Stadium stadium) {
         PreparedStatement pstmt = null;
         int result = 0;
         try {
-            connection.setAutoCommit(false);
+            CONNECTION.setAutoCommit(false);
 
             String query = "INSERT INTO stadium(name, created_at) VALUES (?, now())";
-            pstmt = connection.prepareStatement(query);
+            pstmt = CONNECTION.prepareStatement(query);
             pstmt.setString(1, stadium.getName());
 
             result = pstmt.executeUpdate();
 
             if (result == 1) {
-                connection.commit();
+                CONNECTION.commit();
                 System.out.println(MSG_SUCCESS_TO_REGISTER.getMessage());
                 return result;
             }
 
-            connection.rollback();
+            CONNECTION.rollback();
             System.out.println(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
             return result;
 
         } catch (Exception e) {
             try {
-                connection.rollback();
+                CONNECTION.rollback();
             } catch (SQLException ex) {
                 System.out.println(e.getMessage());
                 throw new DatabaseException(ERR_MSG_FAILED_TO_DELETE.getErrorMessage());
             }
             System.out.println(e.getMessage());
             throw new DatabaseException();
-        } finally {
-            SnowballDBManager.disconnect(connection, pstmt, null);
         }
-
     }
 
     // 야구장 전체 조회
@@ -74,7 +77,7 @@ public class StadiumDao implements StadiumRepository {
         ResultSet resultSet = null;
         try {
             String query = "SELECT * FROM stadium";
-            pstmt = connection.prepareStatement(query);
+            pstmt = CONNECTION.prepareStatement(query);
             resultSet = pstmt.executeQuery();
 
             while (resultSet.next()) {
@@ -88,12 +91,10 @@ public class StadiumDao implements StadiumRepository {
 
             return stadiumList;
 
-        } catch (SQLException e) {
-            throw new DatabaseException(e.getMessage());
-        } finally {
-            SnowballDBManager.disconnect(connection, pstmt, resultSet);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new DatabaseException();
         }
-
     }
 
     // 삭제
@@ -102,35 +103,33 @@ public class StadiumDao implements StadiumRepository {
         PreparedStatement pstmt = null;
         int result = 0;
         try {
-            connection.setAutoCommit(false);
+            CONNECTION.setAutoCommit(false);
 
             String query = "DELETE FROM stadium WHERE id=?";
-            pstmt = connection.prepareStatement(query);
+            pstmt = CONNECTION.prepareStatement(query);
             pstmt.setLong(1, id);
 
             result = pstmt.executeUpdate();
 
             if (result == 1) {
                 System.out.println(MSG_SUCCESS_TO_DELETE.getMessage());
-                connection.commit();
+                CONNECTION.commit();
                 return result;
             }
 
-            connection.rollback();
+            CONNECTION.rollback();
             System.out.println(ERR_MSG_FAILED_TO_DELETE.getErrorMessage());
             return result;
 
         } catch (Exception e) {
             try {
-                connection.rollback();
+                CONNECTION.rollback();
             } catch (SQLException ex) {
                 System.out.println(e.getMessage());
                 throw new DatabaseException(ERR_MSG_FAILED_TO_DELETE.getErrorMessage());
             }
             System.out.println(e.getMessage());
             throw new DatabaseException();
-        } finally {
-            SnowballDBManager.disconnect(connection, pstmt, null);
         }
     }
 
@@ -141,37 +140,32 @@ public class StadiumDao implements StadiumRepository {
         PreparedStatement pstmt = null;
         int result = 0;
         try {
-            connection.setAutoCommit(false);
+            CONNECTION.setAutoCommit(false);
 
             String query = "UPDATE stadium SET name=? WHERE id=?";
-            pstmt = connection.prepareStatement(query);
+            pstmt = CONNECTION.prepareStatement(query);
             pstmt.setString(1, stadium.getName());
             pstmt.setLong(2, stadium.getId());
 
             result = pstmt.executeUpdate();
 
             if (result == 1) {
-                connection.commit();
+                CONNECTION.commit();
                 System.out.println(MSG_SUCCESS_TO_UPDATE.getMessage());
             } else {
-                connection.rollback();
+                CONNECTION.rollback();
                 System.out.println(ERR_MSG_FAILED_TO_UPDATE.getErrorMessage());
             }
 
         } catch (SQLException e) {
             try {
-                connection.rollback();
+                CONNECTION.rollback();
             } catch (SQLException ex) {
                 throw new DatabaseException(ex.getMessage());
             }
             throw new DatabaseException(e.getMessage());
 
-        } finally {
-            SnowballDBManager.disconnect(connection, pstmt, null);
         }
         return result;
-
     }
-
 }
-

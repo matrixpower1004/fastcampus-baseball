@@ -7,6 +7,8 @@ import team.snowball.baseball.view.Report;
 
 import java.util.List;
 
+import static team.snowball.baseball.view.Report.showTeamList;
+
 /**
  * author         : Yongwon Kim
  * date           : 2023-06-28
@@ -14,7 +16,7 @@ import java.util.List;
  */
 public class TeamService{
 
-    private static final TeamDao teamDao = new TeamDao();
+    private static final TeamDao teamDao = TeamDao.getInstance();
 
     public static TeamService teamService;
 
@@ -34,11 +36,7 @@ public class TeamService{
 
     public void read() {
         List<Team> teamList = teamDao.findAllTeams();
-        Report.showTeam(teamList);
-        //List<Team> teamList = teamDao.findAllTeams();
-        //for (Team team : teamList) {
-        //    System.out.println(team);
-        //}
+        showTeamList(teamList);
     }
 
     public void update(Team team) {
@@ -48,6 +46,5 @@ public class TeamService{
     public void delete(Long id) {
         teamDao.delete(id);
     }
-
 
 }

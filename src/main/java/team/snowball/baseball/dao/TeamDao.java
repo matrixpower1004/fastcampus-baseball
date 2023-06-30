@@ -21,10 +21,17 @@ import static team.snowball.baseball.code.ErrorMessage.*;
  */
 public class TeamDao implements TeamRepository {
 
-    private Connection connection;
+    private static final Connection connection = SnowballDBManager.getConnection();;
 
-    public TeamDao() {
-        connection = SnowballDBManager.getConnection();
+    private static TeamDao teamDao;
+    private TeamDao() {
+    }
+
+    public static TeamDao getInstance() {
+        if (teamDao == null) {
+            teamDao = new TeamDao();
+        }
+        return teamDao;
     }
 
     // 팀 등록
@@ -61,10 +68,7 @@ public class TeamDao implements TeamRepository {
             }
             System.out.println(e.getMessage());
             throw new DatabaseException();
-        } finally {
-            SnowballDBManager.disconnect(connection, pstmt, null);
         }
-
     }
 
     // 팀 전체 조회
@@ -90,12 +94,9 @@ public class TeamDao implements TeamRepository {
 
             return teamList;
 
-        } catch (SQLException e) {
-            throw new DatabaseException(e.getMessage());
-        } finally {
-            SnowballDBManager.disconnect(connection, pstmt, resultSet);
+        } catch (Exception e) {
+            throw new DatabaseException();
         }
-
     }
 
     // 팀 삭제
@@ -131,8 +132,6 @@ public class TeamDao implements TeamRepository {
             }
             System.out.println(e.getMessage());
             throw new DatabaseException();
-        } finally {
-            SnowballDBManager.disconnect(connection, pstmt, null);
         }
     }
 
@@ -166,12 +165,7 @@ public class TeamDao implements TeamRepository {
                 throw new DatabaseException(ex.getMessage());
             }
             throw new DatabaseException(e.getMessage());
-
-        } finally {
-            SnowballDBManager.disconnect(connection, pstmt, null);
         }
         return result;
-
     }
-
 }

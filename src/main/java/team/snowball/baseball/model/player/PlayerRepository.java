@@ -1,5 +1,7 @@
 package team.snowball.baseball.model.player;
 
+import team.snowball.baseball.dto.PositionRespDto;
+
 import java.util.List;
 
 /**
@@ -15,6 +17,6 @@ public interface PlayerRepository {
 
     int delete(Long id);
 
-    //Todo: update 구현
-//    int update(Player player);
+    void findLineByPosition();
+
 }
