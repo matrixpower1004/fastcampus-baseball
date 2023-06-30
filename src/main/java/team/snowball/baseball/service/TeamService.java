@@ -3,6 +3,7 @@ package team.snowball.baseball.service;
 
 import team.snowball.baseball.dao.TeamDao;
 import team.snowball.baseball.model.team.Team;
+import team.snowball.baseball.view.Report;
 
 import java.util.List;
 
@@ -33,9 +34,11 @@ public class TeamService{
 
     public void read() {
         List<Team> teamList = teamDao.findAllTeams();
-        for (Team team : teamList) {
-            System.out.println(team);
-        }
+        Report.showTeam(teamList);
+        //List<Team> teamList = teamDao.findAllTeams();
+        //for (Team team : teamList) {
+        //    System.out.println(team);
+        //}
     }
 
     public void update(Team team) {

@@ -2,6 +2,7 @@ package team.snowball.baseball.service;
 
 import team.snowball.baseball.dao.StadiumDao;
 import team.snowball.baseball.model.stadium.Stadium;
+import team.snowball.baseball.view.Report;
 
 import java.util.List;
 
@@ -10,14 +11,13 @@ import java.util.List;
  * date           : 2023-06-28
  * description    :
  */
-public class StadiumService implements CommandService {
+public class StadiumService{
 
-    private final StadiumDao stadiumDao;
+    private static final StadiumDao stadiumDao = new StadiumDao();
 
     public static StadiumService stadiumService;
 
     private StadiumService() {
-        stadiumDao = new StadiumDao();
     }
 
     public static StadiumService getInstance() {
@@ -27,28 +27,24 @@ public class StadiumService implements CommandService {
         return stadiumService;
     }
 
-    @Override
-    public void create() {
-        Stadium stadium = new Stadium();
+    public void create(Stadium stadium) {
         stadiumDao.insert(stadium);
     }
 
-    @Override
     public void read() {
         List<Stadium> stadiums = stadiumDao.findAllStadiums();
-        for (Stadium stadium : stadiums) {
-            System.out.println(stadium);
-        }
+        Report.showStadium(stadiums);
+        //for (Stadium stadium : stadiums) {
+        //    System.out.println(stadium);
+        //}
     }
 
-    @Override
-    public void update() {
-        System.out.println("수정");
+    public void update(Stadium stadium) {
+        stadiumDao.update(stadium);
     }
 
-    @Override
-    public void delete() {
-        System.out.println("삭제");
+    public void delete(Long id) {
+        stadiumDao.delete(id);
     }
 
 }
