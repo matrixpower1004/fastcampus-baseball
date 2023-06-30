@@ -2,6 +2,7 @@ package team.snowball.baseball.service;
 
 import team.snowball.baseball.dao.StadiumDao;
 import team.snowball.baseball.model.stadium.Stadium;
+import team.snowball.baseball.view.Report;
 
 import java.util.List;
 
@@ -32,9 +33,10 @@ public class StadiumService{
 
     public void read() {
         List<Stadium> stadiums = stadiumDao.findAllStadiums();
-        for (Stadium stadium : stadiums) {
-            System.out.println(stadium);
-        }
+        Report.showStadium(stadiums);
+        //for (Stadium stadium : stadiums) {
+        //    System.out.println(stadium);
+        //}
     }
 
     public void update(Stadium stadium) {
