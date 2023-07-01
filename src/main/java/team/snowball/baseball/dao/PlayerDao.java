@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_DELETE;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_FIND;
 
 /**
  * author         : Jason Lee
@@ -39,26 +40,57 @@ public class PlayerDao implements PlayerRepository {
 
     @Override
     public int insert(Player player) {
-        PreparedStatement pstmt = null;
+        //PreparedStatement pstmt = null;
         int result = 0;
         try {
             CONNECTION.setAutoCommit(false);
 
-            String sql = "INSERT INTO player(team_id, name, position, created_at) VALUES (?, ?, ?, now())";
-            pstmt = CONNECTION.prepareStatement(sql);
-            pstmt.setInt(1, player.getTeamId());
-            pstmt.setString(2, player.getName());
-            pstmt.setString(3, player.getPosition());
-
-            result = pstmt.executeUpdate();
-
-            if (result == 1) {
-                CONNECTION.commit();
-                return result;
+            //중목 선수이름 체크
+            String checkQueryName = "SELECT COUNT(*) FROM player WHERE name = ?";
+            try (PreparedStatement pstmt = CONNECTION.prepareStatement(checkQueryName)) {
+                pstmt.setString(1, player.getName());
+                try (ResultSet resultSet = pstmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        int count = resultSet.getInt(1);
+                        if (count > 0) {
+                            System.out.println(ERR_MSG_FAILED_TO_FIND.getErrorMessage()+ "이름");
+                            return 0;
+                        }
+                    }
+                }
             }
 
-            CONNECTION.rollback();
-            return result;
+            //중목 포지션 체크
+            String checkQueryPosition = "SELECT COUNT(*) FROM player WHERE position = ?";
+            try (PreparedStatement pstmt = CONNECTION.prepareStatement(checkQueryPosition)) {
+                pstmt.setString(1, player.getPosition());
+                try (ResultSet resultSet = pstmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        int count = resultSet.getInt(1);
+                        if (count > 0) {
+                            System.out.println(ERR_MSG_FAILED_TO_FIND.getErrorMessage() + "포지션");
+                            return 0;
+                        }
+                    }
+                }
+            }
+
+            String sql = "INSERT INTO player(team_id, name, position, created_at) VALUES (?, ?, ?, now())";
+            try (PreparedStatement pstmt = CONNECTION.prepareStatement(sql)) {
+                pstmt.setInt(1, player.getTeamId());
+                pstmt.setString(2, player.getName());
+                pstmt.setString(3, player.getPosition());
+
+                result = pstmt.executeUpdate();
+
+                if (result == 1) {
+                    CONNECTION.commit();
+                    return result;
+                }
+
+                CONNECTION.rollback();
+                return result;
+            }
 
         } catch (Exception e) {
             try {
