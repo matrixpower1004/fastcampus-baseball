@@ -36,26 +36,40 @@ public class StadiumDao implements StadiumRepository {
     // 야구장 등록
     @Override
     public int insert(Stadium stadium) {
-        PreparedStatement pstmt = null;
         int result = 0;
         try {
             CONNECTION.setAutoCommit(false);
 
-            String query = "INSERT INTO stadium(name, created_at) VALUES (?, now())";
-            pstmt = CONNECTION.prepareStatement(query);
-            pstmt.setString(1, stadium.getName());
-
-            result = pstmt.executeUpdate();
-
-            if (result == 1) {
-                CONNECTION.commit();
-                System.out.println(MSG_SUCCESS_TO_REGISTER.getMessage());
-                return result;
+            //야구장 이름 중복 체크
+            String checkQuery = "SELECT COUNT(*) FROM stadium WHERE name = ?";
+            try (PreparedStatement pstmt = CONNECTION.prepareStatement(checkQuery)) {
+                pstmt.setString(1, stadium.getName());
+                try (ResultSet resultSet = pstmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        int count = resultSet.getInt(1);
+                        if (count > 0) {
+                            System.out.println(ERR_MSG_FAILED_TO_FIND.getErrorMessage());
+                            return 0;
+                        }
+                    }
+                }
             }
 
-            CONNECTION.rollback();
-            System.out.println(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
-            return result;
+            String Query = "INSERT INTO stadium(name, created_at) VALUES (?, now())";
+            try (PreparedStatement pstmt = CONNECTION.prepareStatement(Query)) {
+                pstmt.setString(1, stadium.getName());
+                result = pstmt.executeUpdate();
+
+                if (result == 1) {
+                    CONNECTION.commit();
+                    System.out.println(MSG_SUCCESS_TO_REGISTER.getMessage());
+                    return result;
+                }
+
+                CONNECTION.rollback();
+                System.out.println(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
+                return result;
+            }
 
         } catch (Exception e) {
             try {
@@ -168,4 +182,5 @@ public class StadiumDao implements StadiumRepository {
         }
         return result;
     }
+
 }
