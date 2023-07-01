@@ -48,7 +48,6 @@ public class StadiumDao implements StadiumRepository {
                     if (resultSet.next()) {
                         int count = resultSet.getInt(1);
                         if (count > 0) {
-                            System.out.println(ERR_MSG_FAILED_TO_FIND.getErrorMessage());
                             return 0;
                         }
                     }
@@ -62,15 +61,12 @@ public class StadiumDao implements StadiumRepository {
 
                 if (result == 1) {
                     CONNECTION.commit();
-                    System.out.println(MSG_SUCCESS_TO_REGISTER.getMessage());
                     return result;
                 }
 
                 CONNECTION.rollback();
-                System.out.println(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
                 return result;
             }
-
         } catch (Exception e) {
             try {
                 CONNECTION.rollback();
@@ -81,6 +77,7 @@ public class StadiumDao implements StadiumRepository {
             System.out.println(e.getMessage());
             throw new DatabaseException();
         }
+
     }
 
     // 야구장 전체 조회
