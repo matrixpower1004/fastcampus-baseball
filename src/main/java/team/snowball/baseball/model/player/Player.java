@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 @Builder
 public class Player {
     private Long id;
-    private Integer teamId;
+    private Long teamId;
     private String name;
     private String position;
 

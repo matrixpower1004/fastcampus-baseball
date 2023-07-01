@@ -13,7 +13,7 @@ public interface PlayerRepository {
 
     int insert(Player player);
 
-    List<Player> findByTeamId(int id);
+    List<Player> findByTeamId(Long id);
 
     int delete(Long id);
 
