@@ -3,17 +3,15 @@ package team.snowball.baseball.dao;
 import team.snowball.baseball.handler.DatabaseException;
 import team.snowball.baseball.model.player.Player;
 import team.snowball.baseball.model.player.PlayerRepository;
+import team.snowball.baseball.model.team.Team;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_DELETE;
+import static team.snowball.baseball.code.ErrorMessage.*;
 
 /**
  * author         : Jason Lee
@@ -35,8 +33,6 @@ public class PlayerDao implements PlayerRepository {
         return playerDao;
     }
 
-
-
     @Override
     public int insert(Player player) {
         PreparedStatement pstmt = null;
@@ -46,7 +42,7 @@ public class PlayerDao implements PlayerRepository {
 
             String sql = "INSERT INTO player(team_id, name, position, created_at) VALUES (?, ?, ?, now())";
             pstmt = CONNECTION.prepareStatement(sql);
-            pstmt.setInt(1, player.getTeamId());
+            pstmt.setLong(1, player.getTeamId());
             pstmt.setString(2, player.getName());
             pstmt.setString(3, player.getPosition());
 
@@ -73,20 +69,20 @@ public class PlayerDao implements PlayerRepository {
     }
 
     @Override
-    public List<Player> findByTeamId(int id) {
+    public List<Player> findByTeamId(Long id) {
         PreparedStatement pstmt = null;
         ResultSet resultSet = null;
         List<Player> playerList = new ArrayList<>();
         try {
             String sql = "SELECT * FROM player WHERE team_id = ?";
             pstmt = CONNECTION.prepareStatement(sql);
-            pstmt.setInt(1, id);
+            pstmt.setLong(1, id);
             resultSet = pstmt.executeQuery();
 
             while (resultSet.next()) {
                 Player player = Player.builder()
                         .id(resultSet.getLong("id"))
-                        .teamId(resultSet.getInt("team_id"))
+                        .teamId(resultSet.getLong("team_id"))
                         .name(resultSet.getString("name"))
                         .position(resultSet.getString("position"))
                         .createdAt(resultSet.getTimestamp("created_at"))
@@ -137,57 +133,45 @@ public class PlayerDao implements PlayerRepository {
     @Override
     public void findLineByPosition() {
 
-        PreparedStatement pstmt = null;
-        ResultSet resultSet = null;
-//        List<PositionRespDto> positionByList = new ArrayList<>();
-        Map<Integer, String> teamMap = new HashMap<>();
+        // 2번에 걸쳐서 작업해 보자. 첫 작업에서 team_id와 team_name을 매핑시킨다.
+        // 1. db에서 team_name을 가져온다.
+        List<String> teamNameist = findTeamName();
+        System.out.println(teamNameist);
 
-        try {
-            // 2번에 걸쳐서 작업해 보자. 첫 작업에서 team_id와 team_name을 매핑시킨다.
-            String sql1 = "select id, " +
-                    "SUBSTRING_INDEX(SUBSTRING_INDEX(name, \" \", 2), \" \", -1)" +
-                    "from team";
-            pstmt = CONNECTION.prepareStatement(sql1);
-            resultSet = pstmt.executeQuery();
-
-            while (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String name = resultSet.getString(2);
-                teamMap.put(id, name);
-            }
-
-            // 여기까진 통과
-            System.out.println(teamMap);
-
-            // 2차 작업
-            String sql = "select p.position, " +
-                    "max(case when p.team_id = ? then p.name else '' end) as ? " +
-                    "FROM player p " +
-                    "LEFT JOIN team t ON p.team_id = t.id " +
-                    "GROUP BY p.position " +
-                    "ORDER BY p.position";
-
-            pstmt = CONNECTION.prepareStatement(sql);
-
-            int count = 1;
-            for (Map.Entry<Integer, String> map : teamMap.entrySet()) {
-                pstmt.setInt(1, map.getKey());
-                System.out.println("put : " + map.getKey());
-                String name = "team" + count;
-                pstmt.setString(2, name);
-                count++;
-            }
-
-            resultSet = pstmt.executeQuery();
-
-            while (resultSet.next()) {
-                System.out.println(resultSet.getString("position"));
-                System.out.println(resultSet.getString("team3"));
+        // 2차 작업
+        String sql = "CALL POSITION_PIVOT()";
+        try (PreparedStatement pstmt = CONNECTION.prepareStatement(sql)) {
+            try (ResultSet resultSet = pstmt.executeQuery()) {
+                while (resultSet.next()) {
+                    System.out.print(resultSet.getString("position") + "\t");
+                    for (String teamName : teamNameist) {
+                        System.out.print(resultSet.getString(teamName) + "\t");
+                    }
+                    System.out.println();
+                }
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
             throw new DatabaseException(ERR_MSG_FAILED_TO_DELETE.getErrorMessage());
         }
 
-    } // end of class PlayerDao
-}
+    }
+
+    private List<String> findTeamName() {
+        String sql = "select name from team order by id";
+        List<String> teamList = new ArrayList<>();
+        try (PreparedStatement pstmt = CONNECTION.prepareStatement(sql)) {
+            try (ResultSet resultSet = pstmt.executeQuery()) {
+                while (resultSet.next()) {
+                    String teamName = resultSet.getString("name");
+                    teamList.add(teamName);
+                }
+            }
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            throw new DatabaseException(ERR_MSG_FAILED_TO_FIND_TEAM_NAME.getErrorMessage());
+        }
+        return teamList;
+    }
+
+}// end of class PlayerDao

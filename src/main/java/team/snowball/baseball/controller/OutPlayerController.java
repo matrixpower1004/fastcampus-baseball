@@ -7,6 +7,7 @@ import team.snowball.baseball.model.player.OutPlayer;
 import team.snowball.baseball.service.OutPlayerService;
 
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;
@@ -33,24 +34,37 @@ public class OutPlayerController implements ModelController {
 
     @Override
     public void execute(QueryParseDto queryParseDto) {
-        if (queryParseDto.getCommand().equals(Command.CREATE)) {
-            OutPlayer outPlayer = setOutPlayerParams.apply(queryParseDto);
-            outPlayerService.create(outPlayer);
-        }
-        if (queryParseDto.getCommand().equals(Command.READ)) {
-            outPlayerService.read();
-        }
-        if (queryParseDto.getCommand().equals(Command.PUT)) {
-            OutPlayer outPlayer = setOutPlayerParams.apply(queryParseDto);
-            outPlayerService.update(outPlayer);
-        }
-        if (queryParseDto.getCommand().equals(Command.DELETE)) {
-            Long id = getParamId.apply(queryParseDto);
-            outPlayerService.delete(id);
+        Command command = queryParseDto.getCommand();
+
+        switch (command) {
+            case CREATE:
+                outPlayerService.create(getOutPlayerParams.apply(queryParseDto));
+                break;
+            case READ:
+                // READ에는 2가지 경우가 존재한다.
+                selectOutPlayerRead.accept(queryParseDto);
+                break;
+            case PUT:
+                outPlayerService.update(getOutPlayerParams.apply(queryParseDto));
+                break;
+            case DELETE:
+                outPlayerService.delete(getParamId.apply(queryParseDto));
+                break;
         }
     }
 
-    public static Function<QueryParseDto, OutPlayer> setOutPlayerParams = (queryParseDto) -> {
+    Consumer<QueryParseDto> selectOutPlayerRead = (queryParseDto) -> {
+        // 1. 파라미터에 id가 존재하는 경우
+        if (queryParseDto.getParams().containsKey("playerId")) {
+            outPlayerService.read(getParamId.apply(queryParseDto));
+            return;
+        }
+        // 2. 파라미터가 없는 경우
+        outPlayerService.read();
+    };
+
+
+    public static Function<QueryParseDto, OutPlayer> getOutPlayerParams = (queryParseDto) -> {
         String playerId = "";
         String reason = "";
 
@@ -63,14 +77,14 @@ public class OutPlayerController implements ModelController {
                     reason = entry.getValue();
                 }
             }
-        } catch (IllegalStateException e) {
+        } catch (IllegalStateException | NullPointerException e) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
 
         OutPlayer outPlayer = OutPlayer.builder()
-                    .playerId(Long.valueOf(playerId))
-                    .reason(reason)
-                    .build();
+                .playerId(Long.valueOf(playerId))
+                .reason(reason)
+                .build();
 
         if (outPlayer == null) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());

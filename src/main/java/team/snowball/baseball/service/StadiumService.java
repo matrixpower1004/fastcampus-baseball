@@ -38,6 +38,10 @@ public class StadiumService {
         showStadiumList(stadiums);
     }
 
+    public void read(Long stadiumId) {
+        // 요구사항에 없는 기능.
+    }
+
     public void update(Stadium stadium) {
         stadiumDao.update(stadium);
     }

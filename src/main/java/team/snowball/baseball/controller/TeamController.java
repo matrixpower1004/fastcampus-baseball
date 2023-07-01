@@ -9,6 +9,7 @@ import team.snowball.baseball.service.TeamService;
 import java.util.Map;
 import java.util.function.Function;
 
+import static team.snowball.baseball.code.Command.*;
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;
 
 
@@ -34,24 +35,30 @@ public class TeamController implements ModelController {
 
     @Override
     public void execute(QueryParseDto queryParseDto) {
-        if (queryParseDto.getCommand().equals(Command.CREATE)) {
-            Team team = setTeamParams.apply(queryParseDto);
+        Command command = queryParseDto.getCommand();
+
+        if (command.equals(CREATE)) {
+            Team team = getTeamParams.apply(queryParseDto);
             teamService.create(team);
         }
-        if (queryParseDto.getCommand().equals(Command.READ)) {
+        if (command.equals(READ)) {
             teamService.read();
         }
-        if (queryParseDto.getCommand().equals(Command.PUT)) {
-            Team team = setTeamParams.apply(queryParseDto);
+        if (command.equals(READ_BY)) {
+            Long id = getParamId.apply(queryParseDto);
+            teamService.read(id);
+        }
+        if (command.equals(PUT)) {
+            Team team = getTeamParams.apply(queryParseDto);
             teamService.update(team);
         }
-        if (queryParseDto.getCommand().equals(Command.DELETE)) {
+        if (command.equals(DELETE)) {
             Long id = getParamId.apply(queryParseDto);
             teamService.delete(id);
         }
     }
 
-    public static Function<QueryParseDto, Team> setTeamParams = (queryParseDto) -> {
+    public static Function<QueryParseDto, Team> getTeamParams = (queryParseDto) -> {
         String stadiumId = "";
         String name = "";
 
@@ -64,7 +71,7 @@ public class TeamController implements ModelController {
                     name = entry.getValue();
                 }
             }
-        } catch (IllegalStateException e) {
+        } catch (IllegalStateException | NullPointerException e) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
 

@@ -20,7 +20,8 @@ public enum ErrorMessage {
     ERR_MSG_FAILED_TO_REGISTER("The data registration failed. Please try again."),
     ERR_MSG_FAILED_TO_DELETE("The data deletion failed. Please try again."),
     ERR_MSG_FAILED_TO_UPDATE("The data update failed. Please try again."),
-    ERR_MSG_FAILED_TO_FIND("The data search failed. Please try again.");
+    ERR_MSG_FAILED_TO_FIND("The data search failed. Please try again."),
+    ERR_MSG_FAILED_TO_FIND_TEAM_NAME("The team name search failed.");
 
     private final String errorMessage;
 }
