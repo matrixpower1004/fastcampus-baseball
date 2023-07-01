@@ -1,5 +1,6 @@
 package team.snowball.baseball.dao;
 
+import team.snowball.baseball.code.Position;
 import team.snowball.baseball.handler.DatabaseException;
 import team.snowball.baseball.model.player.Player;
 import team.snowball.baseball.model.player.PlayerRepository;
@@ -46,9 +47,10 @@ public class PlayerDao implements PlayerRepository {
             CONNECTION.setAutoCommit(false);
 
             //중목 선수이름 체크
-            String checkQueryName = "SELECT COUNT(*) FROM player WHERE name = ?";
+            String checkQueryName = "SELECT COUNT(*) FROM player WHERE team_id = ? AND name = ?";
             try (PreparedStatement pstmt = CONNECTION.prepareStatement(checkQueryName)) {
-                pstmt.setString(1, player.getName());
+                pstmt.setInt(1, player.getTeamId());
+                pstmt.setString(2, player.getName());
                 try (ResultSet resultSet = pstmt.executeQuery()) {
                     if (resultSet.next()) {
                         int count = resultSet.getInt(1);
@@ -61,9 +63,10 @@ public class PlayerDao implements PlayerRepository {
             }
 
             //중목 포지션 체크
-            String checkQueryPosition = "SELECT COUNT(*) FROM player WHERE position = ?";
+            String checkQueryPosition = "SELECT COUNT(*) FROM player WHERE team_id = ? AND position = ?";
             try (PreparedStatement pstmt = CONNECTION.prepareStatement(checkQueryPosition)) {
-                pstmt.setString(1, player.getPosition());
+                pstmt.setInt(1, player.getTeamId());
+                pstmt.setString(2, player.getPosition());
                 try (ResultSet resultSet = pstmt.executeQuery()) {
                     if (resultSet.next()) {
                         int count = resultSet.getInt(1);
