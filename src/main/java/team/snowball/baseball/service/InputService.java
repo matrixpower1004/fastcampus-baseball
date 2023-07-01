@@ -1,20 +1,22 @@
 package team.snowball.baseball.service;
 
-import team.snowball.baseball.dto.QueryParseDto;
+import team.snowball.baseball.code.Command;
+import team.snowball.baseball.dto.QueryDto;
 import team.snowball.baseball.handler.InputEndException;
 import team.snowball.baseball.handler.InvalidInputException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 import static team.snowball.baseball.code.Command.findByCommandName;
 import static team.snowball.baseball.code.ConsoleMessage.MSG_GUIDE_END;
-import static team.snowball.baseball.code.Domain.findByDomainName;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_INPUT;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;
+import static team.snowball.baseball.code.ParamList.isMatchKey;
 
 /**
  * author         : Jason Lee
@@ -50,52 +52,82 @@ public class InputService {
         return query;
     }
 
-    public QueryParseDto queryParse(String query) {
-
-        // 입력 null 체크
-        if (query.isBlank() || query == null) {
+    public QueryDto queryParse(String query) {
+        if (query.isEmpty()) {
             throw new InvalidInputException();
+        }
+
+        // parameter 없이 입력되었다면 명령어만 해석하여 리턴
+        if (query.indexOf("?") < 1) {
+            QueryDto queryDto = getCommandOnly.apply(query);
+            return queryDto;
         }
 
         // ?을 기준으로 1차로 나누기
-        String[] parts = query.split("\\?");
-        if (parts.length == 0) {
-            throw new InvalidInputException();
+        String command = "";
+        String params = "";
+        try {
+            StringTokenizer st = new StringTokenizer(query, "?");
+            while (st.hasMoreTokens()) {
+                command = st.nextToken();
+                params = st.nextToken();
+            }
+
+            QueryDto queryDto = getCommandWithParams.apply(command, params);
+            return queryDto;
+
+        } catch (NoSuchElementException e) {
+            throw new InvalidInputException(ERR_MSG_INVALID_INPUT.getErrorMessage());
         }
+    }
 
-        // Query parameter 없이 명령어만 있다면, 명령어만 해석하여 리턴
-        if (parts.length == 1 ) {
-            QueryParseDto queryParseDTO = QueryParseDto.builder()
-                    .domain(findByDomainName(query))
-                    .command(findByCommandName(query))
-                    .build();
-            return queryParseDTO;
-        }
+    private Function<String, QueryDto> getCommandOnly = (String query) -> {
+        QueryDto queryDTO = QueryDto.builder()
+                .command(findByCommandName(query))
+                .params(new HashMap<>()) // NullPointException 방지
+                .build();
+        return queryDTO;
+    };
 
-        // Query paramer 해석하여 리턴
-        final String commands = parts[0];
-        final String params = parts[1];
+    private BiFunction<String, String, QueryDto> getCommandWithParams = (header, params) -> {
+        Command command = findByCommandName(header);
 
-        // &를 기준으로 나누기
         if (params.indexOf("=") < 1) {
-            throw new InvalidInputException();
+            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
 
-        QueryParseDto queryParseDTO = QueryParseDto.builder()
-                .domain(findByDomainName(commands))
-                .command(findByCommandName(commands))
-                .params(Arrays.stream(params.split("&"))
-                        .map((String it) -> splitQueryParams(it))
-                        .collect(Collectors.toMap(m -> m.keySet().iterator().next(), m -> m.values().iterator().next())))
+        Map<String, String> param = getQueryMap(params);
+
+        QueryDto queryDTO = QueryDto.builder()
+                .command(command)
+                .params(param)
                 .build();
 
-        return queryParseDTO;
-    }
+        System.out.println("queryDto" + queryDTO);
+        return queryDTO;
+    };
 
-    private HashMap<String, String> splitQueryParams(String it) {
-        final int idx = it.indexOf("=");
-        final String key = idx > 0 ? it.substring(0, idx) : it;
-        final String value = idx > 0 && it.length() > idx + 1 ? it.substring(idx + 1) : null;
-        return new HashMap<>(Map.of(key, value));
-    }
+    private HashMap<String, String> getQueryMap(String params) {
+        try {
+            StringTokenizer paramToken = new StringTokenizer(params, "&");
+            HashMap<String, String> map = new HashMap<>();
+            while (paramToken.hasMoreTokens()) {
+                StringTokenizer keyWithValue = new StringTokenizer(paramToken.nextToken(), "=");
+                String key = keyWithValue.nextToken();
+                String value = keyWithValue.nextToken();
+
+                if (!isMatchKey(key)) {
+                    throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
+                }
+                if (key.isEmpty() || value.isEmpty()) {
+                    throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
+                }
+                map.put(key, value);
+            }
+            return map;
+
+        } catch (NoSuchElementException | NullPointerException e) {
+            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
+        }
+    };
 }

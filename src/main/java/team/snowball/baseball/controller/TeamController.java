@@ -1,7 +1,6 @@
 package team.snowball.baseball.controller;
 
-import team.snowball.baseball.code.Command;
-import team.snowball.baseball.dto.QueryParseDto;
+import team.snowball.baseball.dto.QueryDto;
 import team.snowball.baseball.handler.InvalidInputException;
 import team.snowball.baseball.model.team.Team;
 import team.snowball.baseball.service.TeamService;
@@ -9,9 +8,7 @@ import team.snowball.baseball.service.TeamService;
 import java.util.Map;
 import java.util.function.Function;
 
-import static team.snowball.baseball.code.Command.*;
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;
-
 
 /**
  * author         : Jason Lee
@@ -34,31 +31,47 @@ public class TeamController implements ModelController {
     }
 
     @Override
-    public void execute(QueryParseDto queryParseDto) {
-        Command command = queryParseDto.getCommand();
+    public void read() {
+        teamService.read();
+    }
 
-        if (command.equals(CREATE)) {
-            Team team = getTeamParams.apply(queryParseDto);
-            teamService.create(team);
+    public void read(QueryDto queryDto) {
+        if (isEmptyParams.test(queryDto)) {
+            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
-        if (command.equals(READ)) {
-            teamService.read();
-        }
-        if (command.equals(READ_BY)) {
-            Long id = getParamId.apply(queryParseDto);
+        if (queryDto.getParams().containsKey("id")) {
+            Long id = getParamId.apply(queryDto);
             teamService.read(id);
         }
-        if (command.equals(PUT)) {
-            Team team = getTeamParams.apply(queryParseDto);
-            teamService.update(team);
+    }
+
+    public void save(QueryDto queryDto) {
+        if (isEmptyParams.test(queryDto)) {
+            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
-        if (command.equals(DELETE)) {
-            Long id = getParamId.apply(queryParseDto);
+        Team team = getTeamParams.apply(queryDto);
+        teamService.save(team);
+    }
+
+    public void update(QueryDto queryDto) {
+        if (isEmptyParams.test(queryDto)) {
+            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
+        }
+        Team team = getTeamParams.apply(queryDto);
+        teamService.update(team);
+    }
+
+    public void delete(QueryDto queryDto) {
+        if (isEmptyParams.test(queryDto)) {
+            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
+        }
+        if (queryDto.getParams().containsKey("id")) {
+            Long id = getParamId.apply(queryDto);
             teamService.delete(id);
         }
     }
 
-    public static Function<QueryParseDto, Team> getTeamParams = (queryParseDto) -> {
+    private Function<QueryDto, Team> getTeamParams = (queryParseDto) -> {
         String stadiumId = "";
         String name = "";
 

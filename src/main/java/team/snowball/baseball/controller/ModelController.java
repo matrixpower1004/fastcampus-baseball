@@ -1,10 +1,11 @@
 package team.snowball.baseball.controller;
 
-import team.snowball.baseball.dto.QueryParseDto;
+import team.snowball.baseball.dto.QueryDto;
 import team.snowball.baseball.handler.InvalidInputException;
 
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;
 
@@ -14,9 +15,16 @@ import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER
  * description    :
  */
 public interface ModelController {
-    void execute(QueryParseDto queryParseDto);
 
-    Function<QueryParseDto, Long> getParamId = (queryParseDto) -> {
+    void read();
+    void read(QueryDto queryDto);
+    void save(QueryDto queryDto);
+    void update(QueryDto queryDto);
+    void delete(QueryDto queryDto);
+
+    Predicate<QueryDto> isEmptyParams = (queryDto) -> queryDto.getParams().isEmpty();
+
+    Function<QueryDto, Long> getParamId = (queryParseDto) -> {
         String id = "";
         try {
             for (Map.Entry<String, String> entry : queryParseDto.getParams().entrySet()) {
@@ -24,7 +32,7 @@ public interface ModelController {
                     id = entry.getValue();
                 }
             }
-        } catch (IllegalStateException e) {
+        } catch (IllegalStateException | NullPointerException e) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
 
