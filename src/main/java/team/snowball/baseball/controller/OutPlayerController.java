@@ -1,13 +1,11 @@
 package team.snowball.baseball.controller;
 
-import team.snowball.baseball.code.Command;
-import team.snowball.baseball.dto.QueryParseDto;
+import team.snowball.baseball.dto.QueryDto;
 import team.snowball.baseball.handler.InvalidInputException;
 import team.snowball.baseball.model.player.OutPlayer;
 import team.snowball.baseball.service.OutPlayerService;
 
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;
@@ -33,38 +31,43 @@ public class OutPlayerController implements ModelController {
     }
 
     @Override
-    public void execute(QueryParseDto queryParseDto) {
-        Command command = queryParseDto.getCommand();
-
-        switch (command) {
-            case CREATE:
-                outPlayerService.create(getOutPlayerParams.apply(queryParseDto));
-                break;
-            case READ:
-                // READ에는 2가지 경우가 존재한다.
-                selectOutPlayerRead.accept(queryParseDto);
-                break;
-            case PUT:
-                outPlayerService.update(getOutPlayerParams.apply(queryParseDto));
-                break;
-            case DELETE:
-                outPlayerService.delete(getParamId.apply(queryParseDto));
-                break;
-        }
+    public void read() {
+        outPlayerService.read();
     }
 
-    Consumer<QueryParseDto> selectOutPlayerRead = (queryParseDto) -> {
-        // 1. 파라미터에 id가 존재하는 경우
-        if (queryParseDto.getParams().containsKey("playerId")) {
-            outPlayerService.read(getParamId.apply(queryParseDto));
-            return;
+    public void read(QueryDto queryDto) {
+        if (isEmptyParams.test(queryDto)) {
+            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
-        // 2. 파라미터가 없는 경우
-        outPlayerService.read();
-    };
+        Long playerId = getParamId.apply(queryDto);
+        outPlayerService.read(playerId);
+    }
 
+    public void save(QueryDto queryDto) {
+        if (isEmptyParams.test(queryDto)) {
+            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
+        }
+        OutPlayer outPlayer = getOutPlayerParams.apply(queryDto);
+        outPlayerService.save(outPlayer);
+    }
 
-    public static Function<QueryParseDto, OutPlayer> getOutPlayerParams = (queryParseDto) -> {
+    public void update(QueryDto queryDto) {
+        if (isEmptyParams.test(queryDto)) {
+            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
+        }
+        OutPlayer outPlayer = getOutPlayerParams.apply(queryDto);
+        outPlayerService.update(outPlayer);
+    }
+
+    public void delete(QueryDto queryDto) {
+        if (isEmptyParams.test(queryDto)) {
+            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
+        }
+        Long playerId = getParamId.apply(queryDto);
+        outPlayerService.delete(playerId);
+    }
+
+    public static Function<QueryDto, OutPlayer> getOutPlayerParams = (queryParseDto) -> {
         String playerId = "";
         String reason = "";
 
@@ -77,19 +80,20 @@ public class OutPlayerController implements ModelController {
                     reason = entry.getValue();
                 }
             }
-        } catch (IllegalStateException | NullPointerException e) {
+
+            OutPlayer outPlayer = OutPlayer.builder()
+                    .playerId(Long.valueOf(playerId))
+                    .reason(reason)
+                    .build();
+
+            if (outPlayer == null) {
+                throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
+            }
+
+            return outPlayer;
+
+        } catch (IllegalStateException | NullPointerException| NumberFormatException e) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
-
-        OutPlayer outPlayer = OutPlayer.builder()
-                .playerId(Long.valueOf(playerId))
-                .reason(reason)
-                .build();
-
-        if (outPlayer == null) {
-            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
-        }
-
-        return outPlayer;
     };
-}
+} // end of class

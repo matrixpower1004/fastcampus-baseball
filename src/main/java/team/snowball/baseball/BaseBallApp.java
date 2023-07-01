@@ -1,8 +1,7 @@
 package team.snowball.baseball;
 
-import team.snowball.baseball.code.Domain;
-import team.snowball.baseball.controller.ModelController;
-import team.snowball.baseball.dto.QueryParseDto;
+import team.snowball.baseball.code.Command;
+import team.snowball.baseball.dto.QueryDto;
 import team.snowball.baseball.handler.InputEndException;
 import team.snowball.baseball.handler.InvalidInputException;
 import team.snowball.baseball.service.InputService;
@@ -19,7 +18,6 @@ public class BaseBallApp {
 
     private static BaseBallApp baseBallApp;
     private static final InputService inputService = InputService.getInstance();
-    private static ModelController controller;
 
     private BaseBallApp() {
         baseBallApp = this;
@@ -38,17 +36,19 @@ public class BaseBallApp {
                 System.out.println(MSG_REQUEST_INPUT.getMessage()); // 입력 요청 메시지 출력
                 final String query = inputService.nextLIne();
 
-                QueryParseDto queryParseDTO = inputService.queryParse(query);
-                controller = Domain.getController(queryParseDTO.getDomain());
-                controller.execute(queryParseDTO);
+                QueryDto queryDto = inputService.queryParse(query);
+
+                Command.execute(queryDto);
 
             } catch (InputEndException e) {
                 System.out.println(MSG_INPUT_END.getMessage());
                 break;
+
             } catch (InvalidInputException e) {
                 System.out.println(e.getMessage());
             }
         }
+
     } // end of run()
 
 } //end of class
