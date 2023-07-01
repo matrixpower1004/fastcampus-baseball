@@ -37,27 +37,55 @@ public class TeamDao implements TeamRepository {
     // 팀 등록
     @Override
     public int insert(Team team) {
-        PreparedStatement pstmt = null;
+        //PreparedStatement pstmt = null;
         int result = 0;
         try {
             connection.setAutoCommit(false);
 
-            String query = "INSERT INTO team(stadium_id, name, created_at) VALUES (?, ?, now())";
-            pstmt = connection.prepareStatement(query);
-            pstmt.setInt(1, team.getStadiumId());
-            pstmt.setString(2, team.getName());
-
-            result = pstmt.executeUpdate();
-
-            if (result == 1) {
-                connection.commit();
-                System.out.println(MSG_SUCCESS_TO_REGISTER.getMessage());
-                return result;
+            //중목 팀이름 체크
+            String checkQueryName = "SELECT COUNT(*) FROM team WHERE name = ?";
+            try (PreparedStatement pstmt = connection.prepareStatement(checkQueryName)) {
+                pstmt.setString(1, team.getName());
+                try (ResultSet resultSet = pstmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        int count = resultSet.getInt(1);
+                        if (count > 0) {
+                            throw new DatabaseException(ERR_MSG_FAILED_TO_FIND.getErrorMessage());
+                        }
+                    }
+                }
             }
 
-            connection.rollback();
-            System.out.println(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
-            return result;
+            //중목 경기장id 체크
+            String checkQueryStadiumName = "SELECT COUNT(*) FROM team WHERE stadium_id = ?";
+            try (PreparedStatement pstmt = connection.prepareStatement(checkQueryStadiumName)) {
+                pstmt.setInt(1, team.getStadiumId());
+                try (ResultSet resultSet = pstmt.executeQuery()) {
+                    if (resultSet.next()) {
+                        int count = resultSet.getInt(1);
+                        if (count > 0) {
+                            throw new DatabaseException(ERR_MSG_FAILED_TO_FIND.getErrorMessage());
+                        }
+                    }
+                }
+            }
+
+            String query = "INSERT INTO team(stadium_id, name, created_at) VALUES (?, ?, now())";
+            try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+                pstmt.setInt(1, team.getStadiumId());
+                pstmt.setString(2, team.getName());
+                result = pstmt.executeUpdate();
+
+                if (result == 1) {
+                    connection.commit();
+                    System.out.println(MSG_SUCCESS_TO_REGISTER.getMessage());
+                    return result;
+                }
+
+                connection.rollback();
+                System.out.println(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
+                return result;
+            }
 
         } catch (Exception e) {
             try {
