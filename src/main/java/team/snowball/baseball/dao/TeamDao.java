@@ -37,7 +37,6 @@ public class TeamDao implements TeamRepository {
     // 팀 등록
     @Override
     public int insert(Team team) {
-        //PreparedStatement pstmt = null;
         int result = 0;
         try {
             connection.setAutoCommit(false);
@@ -50,7 +49,7 @@ public class TeamDao implements TeamRepository {
                     if (resultSet.next()) {
                         int count = resultSet.getInt(1);
                         if (count > 0) {
-                            throw new DatabaseException(ERR_MSG_FAILED_TO_FIND.getErrorMessage());
+                            return 0;
                         }
                     }
                 }
@@ -64,7 +63,7 @@ public class TeamDao implements TeamRepository {
                     if (resultSet.next()) {
                         int count = resultSet.getInt(1);
                         if (count > 0) {
-                            throw new DatabaseException(ERR_MSG_FAILED_TO_FIND.getErrorMessage());
+                            return -1;
                         }
                     }
                 }
@@ -78,12 +77,10 @@ public class TeamDao implements TeamRepository {
 
                 if (result == 1) {
                     connection.commit();
-                    System.out.println(MSG_SUCCESS_TO_REGISTER.getMessage());
                     return result;
                 }
 
                 connection.rollback();
-                System.out.println(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
                 return result;
             }
 
