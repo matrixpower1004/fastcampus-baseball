@@ -45,7 +45,7 @@ class TeamDAOTest {
     @Test
     void delete_test() {
         // Given
-        int id = 4;
+        Long id = 4L;
 
         // When
         int result = teamRepository.delete(id);
@@ -70,4 +70,32 @@ class TeamDAOTest {
         assertThat(result).isEqualTo(1);
     }
 
+    @Test
+    void nameDuplicate_test() {
+        // Given
+        Team team = Team.builder()
+                .name("KA")
+                .build();
+
+        // When
+        int result = TeamDao.getInstance().nameDuplicate(team);
+
+        // Then
+        assertThat(result).isEqualTo(0);
+    }
+
+    @Test
+    void idDuplicate_test() {
+        // Given
+        Team team = Team.builder()
+                .id(5L)
+                .stadiumId(5)
+                .build();
+
+        // When
+        int result = TeamDao.getInstance().idDuplicate(team);
+
+        // Then
+        assertThat(result).isEqualTo(0);
+    }
 }
