@@ -5,12 +5,12 @@ import team.snowball.baseball.dto.OutPlayerRespDto;
 import team.snowball.baseball.handler.InternalServerErrorException;
 import team.snowball.baseball.model.player.OutPlayer;
 import team.snowball.baseball.model.player.OutPlayerRepository;
-import team.snowball.baseball.view.Report;
 
 import java.util.List;
 
-import static team.snowball.baseball.code.ConsoleMessage.*;
-import static team.snowball.baseball.code.ErrorMessage.*;
+import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_REGISTER;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_REGISTER;
+import static team.snowball.baseball.view.OutPlayerReport.showOutPlayer;
 
 /**
  * author         : Jason Lee
@@ -33,7 +33,7 @@ public class OutPlayerService {
         return outPlayerService;
     }
 
-    public void create(OutPlayer outPlayer) {
+    public void save(OutPlayer outPlayer) {
         if (outPlayer == null) {
             throw new InternalServerErrorException();
         }
@@ -41,16 +41,20 @@ public class OutPlayerService {
                 MSG_SUCCESS_TO_REGISTER.getMessage() : ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
     }
 
-    public void read() {
+    public void find() {
         List<OutPlayerRespDto> outPlayerRespDto = REPOSITORY.findAll();
-        Report.showOutPlayer(outPlayerRespDto);
+        showOutPlayer(outPlayerRespDto);
+    }
+
+    public void find(Long id) {
+        // 요구 사항에 없는 기능
     }
 
     public void update(OutPlayer outPlayer) {
-
+        // 요구 사항에 없는 기능
     }
 
     public void delete(Long id) {
-
+        // 요구 사항에 없는 기능
     }
 }

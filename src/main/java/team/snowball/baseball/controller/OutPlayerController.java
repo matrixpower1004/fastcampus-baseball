@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;
+import static team.snowball.baseball.code.ParamList.PLAYER_ID;
+import static team.snowball.baseball.code.ParamList.REASON;
 
 /**
  * author         : Jason Lee
@@ -32,7 +34,7 @@ public class OutPlayerController implements ModelController {
 
     @Override
     public void read() {
-        outPlayerService.read();
+        outPlayerService.find();
     }
 
     public void read(QueryDto queryDto) {
@@ -40,7 +42,7 @@ public class OutPlayerController implements ModelController {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
         Long playerId = getParamId.apply(queryDto);
-        outPlayerService.read(playerId);
+        outPlayerService.find(playerId);
     }
 
     public void save(QueryDto queryDto) {
@@ -73,24 +75,18 @@ public class OutPlayerController implements ModelController {
 
         try {
             for (Map.Entry<String, String> entry : queryParseDto.getParams().entrySet()) {
-                if (entry.getKey().equals("playerId") && entry.getValue() != null) {
+                if (entry.getKey().equals(PLAYER_ID.getKeyName()) && entry.getValue() != null) {
                     playerId = entry.getValue();
                 }
-                if (entry.getKey().equals("reason") && entry.getValue() != null) {
+                if (entry.getKey().equals(REASON.getKeyName()) && entry.getValue() != null) {
                     reason = entry.getValue();
                 }
             }
 
-            OutPlayer outPlayer = OutPlayer.builder()
+            return OutPlayer.builder()
                     .playerId(Long.valueOf(playerId))
                     .reason(reason)
                     .build();
-
-            if (outPlayer == null) {
-                throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
-            }
-
-            return outPlayer;
 
         } catch (IllegalStateException | NullPointerException| NumberFormatException e) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());

@@ -1,15 +1,19 @@
 package team.snowball.baseball.service;
 
 import team.snowball.baseball.dao.PlayerDao;
+import team.snowball.baseball.dao.SnowballDBManager;
+import team.snowball.baseball.dto.PositionRespDto;
 import team.snowball.baseball.handler.InternalServerErrorException;
 import team.snowball.baseball.model.player.Player;
 import team.snowball.baseball.model.player.PlayerRepository;
 
+import java.sql.Connection;
 import java.util.List;
 
-import static team.snowball.baseball.code.ConsoleMessage.*;
-import static team.snowball.baseball.code.ErrorMessage.*;
-import static team.snowball.baseball.view.Report.showPlayerByTeam;
+import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_REGISTER;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_REGISTER;
+import static team.snowball.baseball.view.PlayerReport.showPlayerByTeam;
+import static team.snowball.baseball.view.Report.showResult;
 
 /**
  * author         : Jason Lee
@@ -20,6 +24,9 @@ public class PlayerService {
 
     private static PlayerService playerService;
     private static final PlayerRepository REPOSITORY = PlayerDao.getInstance();
+
+    private static final Connection CONNECTION = SnowballDBManager.getConnection();
+
     private PlayerService() {
     }
 
@@ -29,7 +36,7 @@ public class PlayerService {
         }
         return playerService;
     }
-    public void create(Player player) {
+    public void save(Player player) {
         if (player == null) {
             throw new InternalServerErrorException();
         }
@@ -37,9 +44,15 @@ public class PlayerService {
                 MSG_SUCCESS_TO_REGISTER.getMessage() : ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
     }
 
-    public void read(int id) {
-        List<Player> playerList = REPOSITORY.findByTeamId(id);
+    public void find(Long teamId) {
+        List<Player> playerList = REPOSITORY.findByTeamId(teamId);
         showPlayerByTeam(playerList);
+    }
+
+    public void find() {
+        List<Player> playerList = REPOSITORY.findAll();
+        System.out.println(playerList);
+        //todo: view 구현
     }
 
     public void update(Player player) {
@@ -47,13 +60,11 @@ public class PlayerService {
     }
 
     public void delete(Long id) {
-        if (REPOSITORY.delete(id) != 1) {
-            System.out.println(ERR_MSG_FAILED_TO_DELETE.getErrorMessage());
-        }
-        System.out.println(MSG_SUCCESS_TO_DELETE.getMessage());
+        int result = REPOSITORY.delete(id);
+        showResult.accept(result);
     }
 
-    public void positionByReport() {
-        REPOSITORY.findLineByPosition();
+    public PositionRespDto findPositionBy() {
+        return REPOSITORY.findLineByPosition();
     }
 }

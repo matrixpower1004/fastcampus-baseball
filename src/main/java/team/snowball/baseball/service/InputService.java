@@ -81,36 +81,32 @@ public class InputService {
         }
     }
 
-    private Function<String, QueryDto> getCommandOnly = (String query) -> {
-        QueryDto queryDTO = QueryDto.builder()
+    private final Function<String, QueryDto> getCommandOnly = (String query) -> {
+        return QueryDto.builder()
                 .command(findByCommandName(query))
                 .params(new HashMap<>()) // NullPointException 방지
                 .build();
-        return queryDTO;
     };
 
-    private BiFunction<String, String, QueryDto> getCommandWithParams = (header, params) -> {
+    private final BiFunction<String, String, QueryDto> getCommandWithParams = (header, body) -> {
         Command command = findByCommandName(header);
 
-        if (params.indexOf("=") < 1) {
+        if (body.indexOf("=") < 1) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
 
-        Map<String, String> param = getQueryMap(params);
+        Map<String, String> paramMap = getQueryMap(body);
 
-        QueryDto queryDTO = QueryDto.builder()
+        return QueryDto.builder()
                 .command(command)
-                .params(param)
+                .params(paramMap)
                 .build();
-
-        System.out.println("queryDto" + queryDTO);
-        return queryDTO;
     };
 
     private HashMap<String, String> getQueryMap(String params) {
         try {
             StringTokenizer paramToken = new StringTokenizer(params, "&");
-            HashMap<String, String> map = new HashMap<>();
+            HashMap<String, String> paramMap = new HashMap<>();
             while (paramToken.hasMoreTokens()) {
                 StringTokenizer keyWithValue = new StringTokenizer(paramToken.nextToken(), "=");
                 String key = keyWithValue.nextToken();
@@ -122,9 +118,9 @@ public class InputService {
                 if (key.isEmpty() || value.isEmpty()) {
                     throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
                 }
-                map.put(key, value);
+                paramMap.put(key, value);
             }
-            return map;
+            return paramMap;
 
         } catch (NoSuchElementException | NullPointerException e) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());

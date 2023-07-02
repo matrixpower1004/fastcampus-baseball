@@ -35,10 +35,10 @@ public class StadiumDao implements StadiumRepository {
         }
         return stadiumDao;
     }
+
     // 야구장 등록
     @Override
-    public int insert(Stadium stadium) {
-
+    public int save(Stadium stadium) {
         int result = 0;
         try {
             CONNECTION.setAutoCommit(false);

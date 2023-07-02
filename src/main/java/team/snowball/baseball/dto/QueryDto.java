@@ -2,8 +2,8 @@ package team.snowball.baseball.dto;
 
 import lombok.*;
 import team.snowball.baseball.code.Command;
-import team.snowball.baseball.code.Domain;
 
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -15,19 +15,11 @@ import java.util.Map;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Builder
-public class QueryParseDto {
+public class QueryDto {
 
-    private Domain domain;
     private Command command;
     private Map<String, String> params;
 
-    @Override
-    public String toString() {
-        return "QueryParseDto{" +
-                "domain=" + domain +
-                ", command=" + command +
-                ", params=" + params +
-                '}';
-    }
 }

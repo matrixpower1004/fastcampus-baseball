@@ -33,7 +33,7 @@ public class TeamService {
         return teamService;
     }
 
-    public void create(Team team) {
+    public void save(Team team) {
         if (team == null) {
             throw new InternalServerErrorException();
         }
@@ -59,7 +59,12 @@ public class TeamService {
         showTeamList(teamList);
     }
 
+    public void read(Long id) {
+        // 요구 사항에 없는 기능
+    }
+
     public void update(Team team) {
+        // 요구 사항에 없는 기능
         if (team == null) {
             throw new InternalServerErrorException();
         }
@@ -67,6 +72,7 @@ public class TeamService {
     }
 
     public void delete(Long id) {
+        // 요구 사항에 없는 기능
         teamDao.delete(id);
     }
 
