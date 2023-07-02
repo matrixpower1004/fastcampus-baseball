@@ -32,7 +32,7 @@ public class StadiumService {
         return stadiumService;
     }
 
-    public void create(Stadium stadium) {
+    public void save(Stadium stadium) {
         if (stadium == null) {
             throw new InternalServerErrorException();
         }

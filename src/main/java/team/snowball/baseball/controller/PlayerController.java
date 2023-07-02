@@ -1,9 +1,11 @@
 package team.snowball.baseball.controller;
 
+import team.snowball.baseball.dto.PositionRespDto;
 import team.snowball.baseball.dto.QueryDto;
 import team.snowball.baseball.handler.InvalidInputException;
 import team.snowball.baseball.model.player.Player;
 import team.snowball.baseball.service.PlayerService;
+import team.snowball.baseball.view.PlayerReport;
 
 import java.util.Map;
 import java.util.function.Function;
@@ -33,7 +35,7 @@ public class PlayerController implements ModelController {
 
     @Override
     public void read() {
-        playerService.read();
+        playerService.find();
     }
 
     public void read(QueryDto queryDto) {
@@ -41,7 +43,7 @@ public class PlayerController implements ModelController {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
         Long teamId = Long.valueOf(queryDto.getParams().get("teamId"));
-        playerService.read(teamId);
+        playerService.find(teamId);
     }
 
     public void save(QueryDto queryDto) {
@@ -70,8 +72,10 @@ public class PlayerController implements ModelController {
         playerService.delete(id);
     }
 
-    public void readByPosition() {
-        playerService.reqdPositionBy();
+    public void findByPosition() {
+        PositionRespDto positionRespDto = playerService.findPositionBy();
+        // todo: view 구현
+        PlayerReport.showPlayersByPosition(positionRespDto);
     }
 
     private Function<QueryDto, Player> getPlayerParams = (queryDto) -> {
@@ -81,15 +85,15 @@ public class PlayerController implements ModelController {
 
         try {
             for (Map.Entry<String, String> entry : queryDto.getParams().entrySet()) {
-                if (entry.getKey().equals(TEAM_ID.keyName) &&
+                if (entry.getKey().equals(TEAM_ID.getKeyName()) &&
                         entry.getValue() != null) {
                     teamId = entry.getValue();
                 }
-                if (entry.getKey().equals(NAME.keyName) &&
+                if (entry.getKey().equals(NAME.getKeyName()) &&
                         entry.getValue() != null) {
                     name = entry.getValue();
                 }
-                if (entry.getKey().equals(POSITION.keyName) && entry.getValue() != null) {
+                if (entry.getKey().equals(POSITION.getKeyName()) && entry.getValue() != null) {
                     position = entry.getValue();
                 }
             }

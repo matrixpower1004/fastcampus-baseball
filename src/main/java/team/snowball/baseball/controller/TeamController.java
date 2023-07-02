@@ -1,5 +1,6 @@
 package team.snowball.baseball.controller;
 
+import team.snowball.baseball.code.ParamList;
 import team.snowball.baseball.dto.QueryDto;
 import team.snowball.baseball.handler.InvalidInputException;
 import team.snowball.baseball.model.team.Team;
@@ -39,7 +40,7 @@ public class TeamController implements ModelController {
         if (isEmptyParams.test(queryDto)) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
-        if (queryDto.getParams().containsKey("id")) {
+        if (queryDto.getParams().containsKey(ParamList.ID.getKeyName())) {
             Long id = getParamId.apply(queryDto);
             teamService.read(id);
         }
@@ -65,7 +66,7 @@ public class TeamController implements ModelController {
         if (isEmptyParams.test(queryDto)) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
-        if (queryDto.getParams().containsKey("id")) {
+        if (queryDto.getParams().containsKey(ParamList.ID.getKeyName())) {
             Long id = getParamId.apply(queryDto);
             teamService.delete(id);
         }
@@ -77,10 +78,10 @@ public class TeamController implements ModelController {
 
         try {
             for (Map.Entry<String, String> entry : queryParseDto.getParams().entrySet()) {
-                if (entry.getKey().equals("stadiumId") && entry.getValue() != null) {
+                if (entry.getKey().equals(ParamList.STADIUM_ID.getKeyName()) && entry.getValue() != null) {
                     stadiumId = entry.getValue();
                 }
-                if (entry.getKey().equals("name") && entry.getValue() != null) {
+                if (entry.getKey().equals(ParamList.NAME.getKeyName()) && entry.getValue() != null) {
                     name = entry.getValue();
                 }
             }

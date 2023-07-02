@@ -22,7 +22,7 @@ public enum ParamList {
     STADIUM_ID("stadiumId"),
     PLAYER_ID("playerId");
 
-    final public String keyName;
+    final String keyName;
 
     public static ParamList findByKeyName(String request) {
         return Arrays.stream(ParamList.values())

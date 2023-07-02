@@ -1,9 +1,9 @@
 package team.snowball.baseball.dao;
 
+import team.snowball.baseball.dto.PositionRespDto;
 import team.snowball.baseball.handler.DatabaseException;
 import team.snowball.baseball.model.player.Player;
 import team.snowball.baseball.model.player.PlayerRepository;
-import team.snowball.baseball.model.team.Team;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -100,13 +100,11 @@ public class PlayerDao implements PlayerRepository {
 
     @Override
     public int delete(Long id) {
-        PreparedStatement pstmt = null;
         int result = 0;
-        try {
+        String sql = "delete from player where id=?";
+        try (PreparedStatement pstmt = CONNECTION.prepareStatement(sql)){
             CONNECTION.setAutoCommit(false);
 
-            String sql = "delete from player where id=?";
-            pstmt = CONNECTION.prepareStatement(sql);
             pstmt.setLong(1, id);
 
             result = pstmt.executeUpdate();
@@ -131,31 +129,91 @@ public class PlayerDao implements PlayerRepository {
     }
 
     @Override
-    public void findLineByPosition() {
+    public PositionRespDto findLineByPosition() {
 
-        // 2번에 걸쳐서 작업해 보자. 첫 작업에서 team_id와 team_name을 매핑시킨다.
-        // 1. db에서 team_name을 가져온다.
-        List<String> teamNameist = findTeamName();
-        System.out.println(teamNameist);
+        // 2번에 걸쳐서 작업해 보자.
+        // 1. 먼저 DB에서 현재 등록되어 있는 팀의 이름을 가져온다.
+        List<String> teamNameList = findTeamName();
+        if (teamNameList.size() == 0 || teamNameList == null) {
+            throw new DatabaseException(ERR_MSG_FAILED_TO_FIND.getErrorMessage());
+        }
 
-        // 2차 작업
+        // 2차 작업 - DB의 프로시저를 호출
         String sql = "CALL POSITION_PIVOT()";
+
+        LinkedHashMap<String, List<String>> playerByPositionMap = new LinkedHashMap<>();
+
         try (PreparedStatement pstmt = CONNECTION.prepareStatement(sql)) {
             try (ResultSet resultSet = pstmt.executeQuery()) {
                 while (resultSet.next()) {
-                    System.out.print(resultSet.getString("position") + "\t");
-                    for (String teamName : teamNameist) {
-                        System.out.print(resultSet.getString(teamName) + "\t");
+                    String position = resultSet.getString("position");
+                    List<String> playerNames = new ArrayList<>();
+
+                    for (String teamName : teamNameList) {
+                        String playerName = resultSet.getString(teamName);
+                        playerNames.add(playerName);
                     }
-                    System.out.println();
+
+                    playerByPositionMap.put(position, playerNames);
                 }
+                return PositionRespDto.builder()
+                        .teamNames(teamNameList)
+                        .playersByPosition(playerByPositionMap)
+                        .build();
             }
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            throw new DatabaseException(ERR_MSG_FAILED_TO_DELETE.getErrorMessage());
+            throw new DatabaseException(ERR_MSG_FAILED_TO_FIND.getErrorMessage());
         }
-
     }
+
+    @Override
+    public List<Player> findAll() {
+        String sql = "select * from player order by id";
+        List<Player> playerList = new ArrayList<>();
+        try (PreparedStatement pstmt = CONNECTION.prepareStatement(sql)) {
+            try (ResultSet resultSet = pstmt.executeQuery()) {
+                while (resultSet.next()) {
+                    Player player = makePlayer(resultSet);
+                    playerList.add(player);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new DatabaseException(ERR_MSG_FAILED_TO_FIND.getErrorMessage());
+        }
+        return playerList;
+    }
+
+    @Override
+    public Player findById(Long id) {
+        String sql = "select * from player where id = ?;";
+        try (PreparedStatement pstmt = CONNECTION.prepareStatement(sql)) {
+            pstmt.setLong(1, id);
+            try (ResultSet resultSet = pstmt.executeQuery()) {
+                return makePlayer(resultSet);
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new DatabaseException(ERR_MSG_FAILED_TO_FIND_BY_ID.getErrorMessage());
+        }
+    }
+
+    private Player makePlayer(ResultSet resultSet) {
+        try {
+            return Player.builder()
+                    .id(resultSet.getLong("id"))
+                    .teamId(resultSet.getLong("team_id"))
+                    .name(resultSet.getString("name"))
+                    .position(resultSet.getString("position"))
+                    .createdAt(resultSet.getTimestamp("created_at"))
+                    .build();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new DatabaseException();
+        }
+    }
+
 
     private List<String> findTeamName() {
         String sql = "select name from team order by id";
@@ -167,7 +225,7 @@ public class PlayerDao implements PlayerRepository {
                     teamList.add(teamName);
                 }
             }
-        } catch (Exception e) {
+        } catch (SQLException e) {
             System.out.println(e.getMessage());
             throw new DatabaseException(ERR_MSG_FAILED_TO_FIND_TEAM_NAME.getErrorMessage());
         }
