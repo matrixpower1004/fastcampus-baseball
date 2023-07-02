@@ -28,7 +28,7 @@ class OutPlayerDaoTest {
                 .build();
 
         // When
-        int result = REPOSITORY.insert(outPlayer);
+        int result = REPOSITORY.save(outPlayer);
 
         // Then
         assertThat(result).isEqualTo(1);

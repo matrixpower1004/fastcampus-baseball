@@ -17,15 +17,15 @@ class TeamDAOTest {
     private TeamRepository teamRepository = TeamDao.getInstance();
 
     @Test
-    void inset_test() {
+    void save_test() {
         // Given
         Team team = Team.builder()
-                .stadiumId(6)
+                .stadiumId(6L)
                 .name("LG")
                 .build();
 
         // When
-        int result = teamRepository.insert(team);
+        int result = teamRepository.save(team);
 
         // Then
         assertThat(result).isEqualTo(1);
@@ -36,7 +36,7 @@ class TeamDAOTest {
         // Given
 
         // When
-        List<Team> teamList = teamRepository.findAllTeams();
+        List<Team> teamList = teamRepository.findAll();
 
         // Then
         assertThat(teamList).isNotEmpty();
@@ -59,7 +59,7 @@ class TeamDAOTest {
         // Given
         Team team = Team.builder()
                 .id(1L)
-                .stadiumId(1)
+                .stadiumId(1L)
                 .name("DI")
                 .build();
 
@@ -71,29 +71,12 @@ class TeamDAOTest {
     }
 
     @Test
-    void nameDuplicate_test() {
+    void idDuplicate_Id_test() {
         // Given
-        Team team = Team.builder()
-                .name("KA")
-                .build();
+        Long stadiumId = 5L;
 
         // When
-        int result = TeamDao.getInstance().nameDuplicate(team);
-
-        // Then
-        assertThat(result).isEqualTo(0);
-    }
-
-    @Test
-    void idDuplicate_test() {
-        // Given
-        Team team = Team.builder()
-                .id(5L)
-                .stadiumId(5)
-                .build();
-
-        // When
-        int result = TeamDao.getInstance().idDuplicate(team);
+        int result = TeamDao.getInstance().idDupeStadiumId(stadiumId);
 
         // Then
         assertThat(result).isEqualTo(0);
