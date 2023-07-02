@@ -102,7 +102,7 @@ public class PlayerDao implements PlayerRepository {
     public int delete(Long id) {
         int result = 0;
         String sql = "delete from player where id=?";
-        try (PreparedStatement pstmt = CONNECTION.prepareStatement(sql)){
+        try (PreparedStatement pstmt = CONNECTION.prepareStatement(sql)) {
             CONNECTION.setAutoCommit(false);
 
             pstmt.setLong(1, id);
@@ -174,7 +174,7 @@ public class PlayerDao implements PlayerRepository {
         try (PreparedStatement pstmt = CONNECTION.prepareStatement(sql)) {
             try (ResultSet resultSet = pstmt.executeQuery()) {
                 while (resultSet.next()) {
-                    Player player = makePlayer(resultSet);
+                    Player player = getPlayer(resultSet);
                     playerList.add(player);
                 }
             }
@@ -187,19 +187,35 @@ public class PlayerDao implements PlayerRepository {
 
     @Override
     public Player findById(Long id) {
-        String sql = "select * from player where id = ?;";
+        String sql = "select * from player where id = ?";
         try (PreparedStatement pstmt = CONNECTION.prepareStatement(sql)) {
             pstmt.setLong(1, id);
             try (ResultSet resultSet = pstmt.executeQuery()) {
-                return makePlayer(resultSet);
+                while (resultSet.next()) {
+                    return getPlayer(resultSet);
+                }
             }
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
             throw new DatabaseException(ERR_MSG_FAILED_TO_FIND_BY_ID.getErrorMessage());
+        }
+        throw new DatabaseException(ERR_MSG_FAILED_TO_FIND_BY_ID.getErrorMessage());
+    }
+
+    @Override
+    public int updateRetired(Long playerId) {
+        String sql = "update player set team_id=null where id=?";
+
+        try (PreparedStatement pstmt = CONNECTION.prepareStatement(sql);) {
+            pstmt.setLong(1, playerId);
+
+            return pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new DatabaseException(ERR_MSG_FAILED_TO_UPDATE.getErrorMessage());
         }
     }
 
-    private Player makePlayer(ResultSet resultSet) {
+    private Player getPlayer(ResultSet resultSet) {
         try {
             return Player.builder()
                     .id(resultSet.getLong("id"))
@@ -209,11 +225,9 @@ public class PlayerDao implements PlayerRepository {
                     .createdAt(resultSet.getTimestamp("created_at"))
                     .build();
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
-            throw new DatabaseException();
+            throw new DatabaseException(ERR_MSG_FAILED_TO_FIND.getErrorMessage());
         }
     }
-
 
     private List<String> findTeamName() {
         String sql = "select name from team order by id";

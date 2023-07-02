@@ -1,6 +1,6 @@
 package team.snowball.baseball.service;
 
-import team.snowball.baseball.code.Command;
+import team.snowball.baseball.controller.Command;
 import team.snowball.baseball.dto.QueryDto;
 import team.snowball.baseball.handler.InputEndException;
 import team.snowball.baseball.handler.InvalidInputException;
@@ -12,7 +12,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static team.snowball.baseball.code.Command.findByCommandName;
+import static team.snowball.baseball.controller.Command.findByCommandName;
 import static team.snowball.baseball.code.ConsoleMessage.MSG_GUIDE_END;
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_INPUT;
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;

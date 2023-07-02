@@ -9,9 +9,9 @@ import java.util.List;
  */
 public interface TeamRepository {
 
-    int insert(Team team);
+    int save(Team team);
 
-    List<Team> findAllTeams();
+    List<Team> findAll();
 
     int delete(Long id);
 

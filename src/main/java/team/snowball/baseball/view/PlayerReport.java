@@ -20,15 +20,13 @@ public class PlayerReport {
         StringBuilder sb = new StringBuilder();
         sb.append("-------------------------------------------\n");
         sb.append(String.format("%s%s%s%s\n",
-                formatter("ID", 6),
+                formatter("id", 6),
                 formatter("name", 10),
                 formatter("position", 10),
-                formatter("등록일자", 12 )));
+                formatter("createdAt", 12)));
         sb.append("-------------------------------------------\n");
         for (Player list : playerList) {
-            String dateStr = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    .withZone(ZoneId.systemDefault())
-                    .format(list.getCreatedAt().toInstant());
+            String dateStr = dateFormatter.apply(list.getCreatedAt());
             sb.append(String.format("%6d%s%s%s\n",
                     list.getId(),
                     formatter(list.getName(), 10),
@@ -43,7 +41,7 @@ public class PlayerReport {
         StringBuilder sb = new StringBuilder();
         sb.append("-------------------------------------------\n");
         sb.append(String.format("%s", formatter("Position", 10)));
-        for (String teamName: positionRespDto.getTeamNames()) {
+        for (String teamName : positionRespDto.getTeamNames()) {
             sb.append(String.format("%s", formatter(teamName, 10)));
         }
         sb.append("\n");
@@ -54,7 +52,7 @@ public class PlayerReport {
             for (String name : playerNames) {
                 if (name.isEmpty()) {
                     sb.append(String.format("%s", formatter("", 10)));
-                    // continue 를 빼먹어서 열이 안 맞는다고 얼마나 헤맸던지 ㅠㅠ...
+                    // continue 를 빼먹어서 열이 안 맞는 것 때문에 얼마나 헤맸던지 ㅠㅠ...
                     continue;
                 }
                 sb.append(String.format("%s", formatter(name, 10)));
@@ -62,6 +60,50 @@ public class PlayerReport {
             sb.append("\n");
         }
         sb.append("-------------------------------------------\n");
+        System.out.println(sb);
+    }
+
+    public static void showPlayerAll(List<Player> playerList) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("--------------------------------------------------------------\n");
+        sb.append(String.format("%s%s%s%s%s\n",
+                formatter("id", 6),
+                formatter("team_id", 10),
+                formatter("name", 12),
+                formatter("position", 14),
+                formatter("createdAt", 16)));
+        sb.append("--------------------------------------------------------------\n");
+        for (Player list : playerList) {
+            String dateStr = dateFormatter.apply(list.getCreatedAt());
+            sb.append(String.format("%6d%10d%s%s%s\n",
+                    list.getId(),
+                    list.getTeamId(),
+                    formatter(list.getName(), 12),
+                    formatter(list.getPosition(), 14),
+                    formatter(dateStr, 16)));
+        }
+        sb.append("-------------------------------------------------------------\n");
+        System.out.println(sb);
+    }
+
+    public static void showPlayerOne(Player player) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("--------------------------------------------------------------\n");
+        sb.append(String.format("%s%s%s%s%s\n",
+                formatter("id", 6),
+                formatter("team_id", 10),
+                formatter("name", 12),
+                formatter("position", 14),
+                formatter("createdAt", 16)));
+        sb.append("--------------------------------------------------------------\n");
+        String dateStr = dateFormatter.apply(player.getCreatedAt());
+        sb.append(String.format("%6d%10d%s%s%s\n",
+                player.getId(),
+                player.getTeamId(),
+                formatter(player.getName(), 12),
+                formatter(player.getPosition(), 14),
+                formatter(dateStr, 16)));
+        sb.append("-------------------------------------------------------------\n");
         System.out.println(sb);
     }
 }

@@ -2,31 +2,45 @@ package team.snowball.baseball.view;
 
 import team.snowball.baseball.model.stadium.Stadium;
 
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
+
+import static team.snowball.baseball.view.Report.dateFormatter;
 
 public class StadiumReport {
 
     public static void showStadiumList(List<Stadium> stadiumList) {
         StringBuilder sb = new StringBuilder();
-        sb.append("-------------------------------------------\n");
+        sb.append("-----------------------------------------------------\n");
         sb.append(String.format("%s%s%s\n",
-                Report.convert("id", 6),
-                Report.convert("name", 20),
-                Report.convert("createdAt", 12)));
-        sb.append("-------------------------------------------\n");
+                Report.formatter("id", 6),
+                Report.formatter("name", 24),
+                Report.formatter("createdAt", 18)));
+        sb.append("-----------------------------------------------------\n");
         for (Stadium list : stadiumList) {
-            String dateStr = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                    .withZone(ZoneId.systemDefault())
-                    .format(list.getCreatedAt().toInstant());
+            String dateStr = dateFormatter.apply(list.getCreatedAt());
             sb.append(String.format("%6d%s%s\n",
                     list.getId(),
-                    Report.convert(list.getName(), 20),
-                    Report.convert(dateStr, 12)));
+                    Report.formatter(list.getName(), 24),
+                    Report.formatter(dateStr, 18)));
         }
-        sb.append("-------------------------------------------\n");
+        sb.append("-----------------------------------------------------\n");
         System.out.println(sb);
     }
 
+    public static void showStadium(Stadium stadium) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("-----------------------------------------------------\n");
+        sb.append(String.format("%s%s%s\n",
+                Report.formatter("id", 6),
+                Report.formatter("name", 24),
+                Report.formatter("createdAt", 18)));
+        sb.append("-----------------------------------------------------\n");
+        String dateStr = dateFormatter.apply(stadium.getCreatedAt());
+        sb.append(String.format("%6d%s%s\n",
+                stadium.getId(),
+                Report.formatter(stadium.getName(), 24),
+                Report.formatter(dateStr, 18)));
+        sb.append("-----------------------------------------------------\n");
+        System.out.println(sb);
+    }
 }

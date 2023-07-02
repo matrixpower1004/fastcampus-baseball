@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * date           : 2023-06-28
  * description    :
  */
-class StadiumDAOTest {
+class StadiumDaoTest {
     private StadiumRepository stadiumRepository = StadiumDao.getInstance();
 
     @Test
@@ -24,7 +24,7 @@ class StadiumDAOTest {
                 .build();
 
         // When
-        int result = stadiumRepository.insert(stadium);
+        int result = stadiumRepository.save(stadium);
 
         // Then
         assertThat(result).isEqualTo(1);
@@ -35,7 +35,7 @@ class StadiumDAOTest {
         // Given
 
         // When
-        List<Stadium> stadiumList = stadiumRepository.findAllStadiums();
+        List<Stadium> stadiumList = stadiumRepository.findAll();
 
         // Then
         assertThat(stadiumList).isNotEmpty();
@@ -80,6 +80,18 @@ class StadiumDAOTest {
 
         // Then
         assertThat(result).isEqualTo(0);
+    }
+
+    @Test
+    void test() {
+        // Given
+        Long id = 1L;
+
+        // When
+        Stadium stadium = stadiumRepository.findById(id);
+
+        // Then
+        assertThat(stadium.getId()).isEqualTo(id);
     }
 
 }

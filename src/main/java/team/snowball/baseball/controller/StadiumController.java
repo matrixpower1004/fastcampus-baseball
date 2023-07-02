@@ -5,7 +5,9 @@ import team.snowball.baseball.dto.QueryDto;
 import team.snowball.baseball.handler.InvalidInputException;
 import team.snowball.baseball.model.stadium.Stadium;
 import team.snowball.baseball.service.StadiumService;
+import team.snowball.baseball.view.StadiumReport;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -32,18 +34,18 @@ public class StadiumController implements ModelController {
     }
 
     @Override
-    public void read() {
-        stadiumService.read();
+    public void findAll() {
+        List<Stadium> stadiums = stadiumService.findAll();
+        StadiumReport.showStadiumList(stadiums);
     }
 
-    public void read(QueryDto queryDto) {
+    public void findById(QueryDto queryDto) {
         if (isEmptyParams.test(queryDto)) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
-        if (queryDto.getParams().containsKey("id")) {
-            Long id = getParamId.apply(queryDto);
-            stadiumService.read(id);
-        }
+        Long id = getParamId.apply(queryDto);
+        Stadium stadium = stadiumService.findById(id);
+        StadiumReport.showStadium(stadium);
     }
 
     public void save(QueryDto queryDto) {
@@ -60,17 +62,17 @@ public class StadiumController implements ModelController {
         }
 
         Stadium stadium = getStadiumParams.apply(queryDto);
-        stadiumService.update(stadium);
+        String result = stadiumService.update(stadium);
+        System.out.println(result);
     }
 
     public void delete(QueryDto queryDto) {
         if (isEmptyParams.test(queryDto)) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
-        if (queryDto.getParams().containsKey(ParamList.ID.getKeyName())) {
-            Long id = getParamId.apply(queryDto);
-            stadiumService.delete(id);
-        }
+        Long id = getParamId.apply(queryDto);
+        String result = stadiumService.delete(id);
+        System.out.println(result);
     }
 
     private Function<QueryDto, Stadium> getStadiumParams = (queryParseDto) -> {
@@ -78,11 +80,12 @@ public class StadiumController implements ModelController {
 
         try {
             for (Map.Entry<String, String> entry : queryParseDto.getParams().entrySet()) {
-                if (entry.getKey().equals(ParamList.NAME.getKeyName()) && entry.getValue() != null) {
+                if (entry.getKey().equals(ParamList.NAME.getKeyName()) &&
+                        !entry.getValue().isEmpty()) {
                     name = entry.getValue();
                 }
             }
-        } catch (IllegalStateException | NullPointerException e) {
+        } catch (IllegalStateException | NullPointerException | NumberFormatException e) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
 
@@ -91,5 +94,3 @@ public class StadiumController implements ModelController {
                 .build();
     };
 }
-
-

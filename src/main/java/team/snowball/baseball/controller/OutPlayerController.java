@@ -1,16 +1,19 @@
 package team.snowball.baseball.controller;
 
+import team.snowball.baseball.dto.OutPlayerRespDto;
 import team.snowball.baseball.dto.QueryDto;
 import team.snowball.baseball.handler.InvalidInputException;
 import team.snowball.baseball.model.player.OutPlayer;
 import team.snowball.baseball.service.OutPlayerService;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;
 import static team.snowball.baseball.code.ParamList.PLAYER_ID;
 import static team.snowball.baseball.code.ParamList.REASON;
+import static team.snowball.baseball.view.OutPlayerReport.showOutPlayer;
 
 /**
  * author         : Jason Lee
@@ -33,16 +36,18 @@ public class OutPlayerController implements ModelController {
     }
 
     @Override
-    public void read() {
-        outPlayerService.find();
+    public void findAll() {
+        List<OutPlayerRespDto> outPlayerRespDto = outPlayerService.findAll();
+        showOutPlayer(outPlayerRespDto);
     }
 
-    public void read(QueryDto queryDto) {
+    public void findById(QueryDto queryDto) {
         if (isEmptyParams.test(queryDto)) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
+        // todo: 미구현
         Long playerId = getParamId.apply(queryDto);
-        outPlayerService.find(playerId);
+        outPlayerService.findById(playerId);
     }
 
     public void save(QueryDto queryDto) {
@@ -50,7 +55,8 @@ public class OutPlayerController implements ModelController {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
         OutPlayer outPlayer = getOutPlayerParams.apply(queryDto);
-        outPlayerService.save(outPlayer);
+        String result = outPlayerService.save(outPlayer);
+        System.out.println(result);
     }
 
     public void update(QueryDto queryDto) {
@@ -75,10 +81,10 @@ public class OutPlayerController implements ModelController {
 
         try {
             for (Map.Entry<String, String> entry : queryParseDto.getParams().entrySet()) {
-                if (entry.getKey().equals(PLAYER_ID.getKeyName()) && entry.getValue() != null) {
+                if (entry.getKey().equals(PLAYER_ID.getKeyName()) && !entry.getValue().isEmpty()) {
                     playerId = entry.getValue();
                 }
-                if (entry.getKey().equals(REASON.getKeyName()) && entry.getValue() != null) {
+                if (entry.getKey().equals(REASON.getKeyName()) && !entry.getValue().isEmpty()) {
                     reason = entry.getValue();
                 }
             }

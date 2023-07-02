@@ -1,17 +1,21 @@
 package team.snowball.baseball.controller;
 
+import team.snowball.baseball.code.ParamList;
 import team.snowball.baseball.dto.PositionRespDto;
 import team.snowball.baseball.dto.QueryDto;
 import team.snowball.baseball.handler.InvalidInputException;
 import team.snowball.baseball.model.player.Player;
 import team.snowball.baseball.service.PlayerService;
 import team.snowball.baseball.view.PlayerReport;
+import team.snowball.baseball.view.Report;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_INVALID_PARAMETER;
 import static team.snowball.baseball.code.ParamList.*;
+import static team.snowball.baseball.view.PlayerReport.showPlayerByTeam;
 
 /**
  * author         : Jason Lee
@@ -20,8 +24,9 @@ import static team.snowball.baseball.code.ParamList.*;
  */
 public class PlayerController implements ModelController {
 
-    private static PlayerController playerController;
     private static final PlayerService playerService = PlayerService.getInstance();
+
+    private static PlayerController playerController;
 
     private PlayerController() {
     }
@@ -34,16 +39,28 @@ public class PlayerController implements ModelController {
     }
 
     @Override
-    public void read() {
-        playerService.find();
+    public void findAll() {
+        List<Player> playerList = playerService.findAll();
+        PlayerReport.showPlayerAll(playerList);
     }
 
-    public void read(QueryDto queryDto) {
+    public void findByTeamId(QueryDto queryDto) {
         if (isEmptyParams.test(queryDto)) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
-        Long teamId = Long.valueOf(queryDto.getParams().get("teamId"));
-        playerService.find(teamId);
+        Long teamId = Long.valueOf(queryDto.getParams().get(TEAM_ID.getKeyName()));
+        List<Player> playerList = playerService.findByTeamId(teamId);
+        showPlayerByTeam(playerList);
+    }
+
+    public void findById(QueryDto queryDto) {
+        if (isEmptyParams.test(queryDto)) {
+            throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
+        }
+        Long id  = getParamId.apply(queryDto);
+        System.out.println("여기까지 오나?" + id);
+        Player player = playerService.findById(id);
+        PlayerReport.showPlayerOne(player);
     }
 
     public void save(QueryDto queryDto) {
@@ -51,7 +68,9 @@ public class PlayerController implements ModelController {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
         Player player = getPlayerParams.apply(queryDto);
-        playerService.save(player);
+        int result = playerService.save(player);
+        Report.showSaveResult.accept(result);
+
     }
 
     @Override
@@ -86,14 +105,16 @@ public class PlayerController implements ModelController {
         try {
             for (Map.Entry<String, String> entry : queryDto.getParams().entrySet()) {
                 if (entry.getKey().equals(TEAM_ID.getKeyName()) &&
-                        entry.getValue() != null) {
+                        !entry.getValue().isEmpty()) {
                     teamId = entry.getValue();
                 }
                 if (entry.getKey().equals(NAME.getKeyName()) &&
-                        entry.getValue() != null) {
+                        !entry.getValue().isEmpty()) {
                     name = entry.getValue();
                 }
-                if (entry.getKey().equals(POSITION.getKeyName()) && entry.getValue() != null) {
+                //todo: position을 enum으로 변경하여 입력값을 강제하자
+                if (entry.getKey().equals(POSITION.getKeyName()) &&
+                        !entry.getValue().isEmpty()) {
                     position = entry.getValue();
                 }
             }

@@ -3,13 +3,15 @@ package team.snowball.baseball.service;
 import team.snowball.baseball.dao.StadiumDao;
 import team.snowball.baseball.handler.InternalServerErrorException;
 import team.snowball.baseball.model.stadium.Stadium;
+import team.snowball.baseball.view.StadiumReport;
 
 import java.util.List;
-import java.util.function.Consumer;
 
-import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_REGISTER;
-import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_DUPLIACTE_NAME;
-import static team.snowball.baseball.view.Report.showStadiumList;
+import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_DELETE;
+import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_UPDATE;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_DELETE;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_UPDATE;
+import static team.snowball.baseball.view.Report.showSaveResult;
 
 /**
  * author         : Yongwon Kim
@@ -36,32 +38,28 @@ public class StadiumService {
         if (stadium == null) {
             throw new InternalServerErrorException();
         }
-        showResult.accept(stadiumDao.insert(stadium));
+        showSaveResult.accept(stadiumDao.save(stadium));
     }
 
-    Consumer<Integer> showResult = (result) -> {
-        System.out.println(result == 1 ?
-                MSG_SUCCESS_TO_REGISTER.getMessage() : ERR_MSG_DUPLIACTE_NAME.getErrorMessage());
-    };
-
-    public void read() {
-        List<Stadium> stadiums = stadiumDao.findAllStadiums();
-        showStadiumList(stadiums);
+    public List<Stadium> findAll() {
+        return stadiumDao.findAll();
     }
 
-    public void read(Long stadiumId) {
-        // 요구사항에 없는 기능.
+    public Stadium findById(Long stadiumId) {
+        return stadiumDao.findById(stadiumId);
     }
 
-    public void update(Stadium stadium) {
+    public String update(Stadium stadium) {
         if (stadium == null) {
             throw new InternalServerErrorException();
         }
-        showResult.accept(stadiumDao.update(stadium));
+        return stadiumDao.update(stadium) == 1 ? MSG_SUCCESS_TO_UPDATE.getMessage() :
+                ERR_MSG_FAILED_TO_UPDATE.getErrorMessage();
     }
 
-    public void delete(Long id) {
-        stadiumDao.delete(id);
-    }
+    public String delete(Long id) {
+        return stadiumDao.delete(id) == 1 ? MSG_SUCCESS_TO_DELETE.getMessage() :
+                ERR_MSG_FAILED_TO_DELETE.getErrorMessage();
 
+    }
 }

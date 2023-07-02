@@ -10,7 +10,6 @@ import java.sql.Timestamp;
  */
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
@@ -18,7 +17,7 @@ import java.sql.Timestamp;
 public class Team {
 
     private Long id;
-    private Integer stadiumId;
+    private Long stadiumId;
     private String name;
     private Timestamp createdAt;
 
