@@ -198,7 +198,7 @@ DELIMITER ;
 
 
 ### Enum을 통한 Controller 구현
-![enum1](https://github.com/matrixpower1004/fastcampus-baseball/assets/104916288/8a0fdf76-edcb-44de-935f-81d2593c4d21)
+![enum2](https://github.com/matrixpower1004/fastcampus-baseball/assets/104916288/d9255332-e246-4911-8702-2ee95dddc7dc)
 * 이 프로젝트에서 가장 많은 시간과 공을 들인 부분입니다.
 * 어떤 프로젝트든 기본적인 CRUD를 하는 것은 같고, 이런 공통된 부분을 추상화를 통해 해결할 수 없을까 라는 부분을 고민하였습니다.
 * 사용자 입력 데이터의 명령어 및 Parameter를 parsing하면서 Enum을 통한 category화가 이루어지는데, Controller에서 또 분기를 위한 if문을 사용할 필요가 있을까? 이런 질문으로 시작된 생각은 if문으로 분기를 하는 대신 Enum의 category화 된 구조를 활용할 방법은 없을까 라는 생각으로 이어졌습니다.
