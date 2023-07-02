@@ -60,7 +60,7 @@ public enum Command {
         OutPlayerController.getInstance().save(queryDto);
     }),
     POSITION_BY("포지션별목록", (queryDto) -> {
-        PlayerController.getInstance().readByPosition();
+        PlayerController.getInstance().findByPosition();
     });
 
     private final String command;

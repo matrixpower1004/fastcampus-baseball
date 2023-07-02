@@ -3,7 +3,6 @@ package team.snowball.baseball.service;
 
 import team.snowball.baseball.dao.TeamDao;
 import team.snowball.baseball.model.team.Team;
-import team.snowball.baseball.view.Report;
 
 import java.util.List;
 
@@ -30,7 +29,7 @@ public class TeamService{
         return teamService;
     }
 
-    public void create(Team team) {
+    public void save(Team team) {
         teamDao.insert(team);
     }
 
@@ -39,11 +38,17 @@ public class TeamService{
         showTeamList(teamList);
     }
 
+    public void read(Long id) {
+        // 요구 사항에 없는 기능
+    }
+
     public void update(Team team) {
+        // 요구 사항에 없는 기능
         teamDao.update(team);
     }
 
     public void delete(Long id) {
+        // 요구 사항에 없는 기능
         teamDao.delete(id);
     }
 

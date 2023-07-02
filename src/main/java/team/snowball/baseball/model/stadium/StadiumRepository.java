@@ -10,7 +10,7 @@ import java.util.List;
  */
 public interface StadiumRepository {
 
-    int insert(Stadium stadium);
+    int save(Stadium stadium);
 
     List<Stadium> findAllStadiums();
 

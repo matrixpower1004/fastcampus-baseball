@@ -2,7 +2,6 @@ package team.snowball.baseball.service;
 
 import team.snowball.baseball.dao.StadiumDao;
 import team.snowball.baseball.model.stadium.Stadium;
-import team.snowball.baseball.view.Report;
 
 import java.util.List;
 
@@ -29,8 +28,8 @@ public class StadiumService {
         return stadiumService;
     }
 
-    public void create(Stadium stadium) {
-        stadiumDao.insert(stadium);
+    public void save(Stadium stadium) {
+        int result = stadiumDao.save(stadium);
     }
 
     public void read() {
