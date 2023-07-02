@@ -12,7 +12,9 @@ public interface StadiumRepository {
 
     int save(Stadium stadium);
 
-    List<Stadium> findAllStadiums();
+    List<Stadium> findAll();
+
+    Stadium findById(Long id);
 
     int delete(Long id);
 

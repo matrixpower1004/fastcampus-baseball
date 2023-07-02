@@ -22,4 +22,6 @@ public interface PlayerRepository {
     List<Player> findAll();
 
     Player findById(Long id);
+
+    int updateRetired(Long id);
 }

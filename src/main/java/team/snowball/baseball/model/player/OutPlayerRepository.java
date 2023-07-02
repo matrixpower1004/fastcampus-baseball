@@ -10,7 +10,9 @@ import java.util.List;
  * description    :
  */
 public interface OutPlayerRepository {
-    int insert(OutPlayer outPlayer);
+    int save(OutPlayer outPlayer);
 
     List<OutPlayerRespDto> findAll();
+
+
 }

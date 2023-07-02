@@ -1,19 +1,14 @@
 package team.snowball.baseball.service;
 
 import team.snowball.baseball.dao.PlayerDao;
-import team.snowball.baseball.dao.SnowballDBManager;
 import team.snowball.baseball.dto.PositionRespDto;
 import team.snowball.baseball.handler.InternalServerErrorException;
 import team.snowball.baseball.model.player.Player;
 import team.snowball.baseball.model.player.PlayerRepository;
 
-import java.sql.Connection;
 import java.util.List;
 
-import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_REGISTER;
-import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_REGISTER;
-import static team.snowball.baseball.view.PlayerReport.showPlayerByTeam;
-import static team.snowball.baseball.view.Report.showResult;
+import static team.snowball.baseball.view.Report.showIsDuplicate;
 
 /**
  * author         : Jason Lee
@@ -22,10 +17,10 @@ import static team.snowball.baseball.view.Report.showResult;
  */
 public class PlayerService {
 
-    private static PlayerService playerService;
-    private static final PlayerRepository REPOSITORY = PlayerDao.getInstance();
+    private static final PlayerRepository PLAYER_REPOSITORY = PlayerDao.getInstance();
 
-    private static final Connection CONNECTION = SnowballDBManager.getConnection();
+    private static PlayerService playerService;
+
 
     private PlayerService() {
     }
@@ -36,35 +31,39 @@ public class PlayerService {
         }
         return playerService;
     }
-    public void save(Player player) {
+
+    public int save(Player player) {
         if (player == null) {
             throw new InternalServerErrorException();
         }
-        System.out.println(REPOSITORY.insert(player) == 1 ?
-                MSG_SUCCESS_TO_REGISTER.getMessage() : ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
+        return PLAYER_REPOSITORY.insert(player);
     }
 
-    public void find(Long teamId) {
-        List<Player> playerList = REPOSITORY.findByTeamId(teamId);
-        showPlayerByTeam(playerList);
+    public List<Player> findByTeamId(Long teamId) {
+        return PLAYER_REPOSITORY.findByTeamId(teamId);
     }
 
-    public void find() {
-        List<Player> playerList = REPOSITORY.findAll();
-        System.out.println(playerList);
-        //todo: view 구현
+    public Player findById(Long id) {
+        // 요구사항에 없는 기능
+        return PLAYER_REPOSITORY.findById(id);
+    }
+
+    public List<Player> findAll() {
+        return PLAYER_REPOSITORY.findAll();
+
     }
 
     public void update(Player player) {
-        System.out.println("선수 수정");
+        // 요구사항에 없는 기능
     }
 
     public void delete(Long id) {
-        int result = REPOSITORY.delete(id);
-        showResult.accept(result);
+        int result = PLAYER_REPOSITORY.delete(id);
+        showIsDuplicate.accept(result);
     }
 
     public PositionRespDto findPositionBy() {
-        return REPOSITORY.findLineByPosition();
+        return PLAYER_REPOSITORY.findLineByPosition();
     }
-}
+
+} // end of class

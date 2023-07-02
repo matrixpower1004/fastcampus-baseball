@@ -6,11 +6,9 @@ import team.snowball.baseball.handler.InternalServerErrorException;
 import team.snowball.baseball.model.team.Team;
 
 import java.util.List;
-import java.util.function.Consumer;
 
 import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_REGISTER;
-import static team.snowball.baseball.code.ErrorMessage.*;
-import static team.snowball.baseball.view.Report.showTeamList;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_REGISTER;
 
 /**
  * author         : Yongwon Kim
@@ -33,47 +31,39 @@ public class TeamService {
         return teamService;
     }
 
-    public void save(Team team) {
+    public String save(Team team) {
         if (team == null) {
             throw new InternalServerErrorException();
         }
-        showResult.accept(teamDao.insert(team));
+        int result = teamDao.save(team);
+        return result == 1 ? MSG_SUCCESS_TO_REGISTER.getMessage() :
+                ERR_MSG_FAILED_TO_REGISTER.getErrorMessage();
     }
 
-    Consumer<Integer> showResult = (result) -> {
-        String message;
-        if (result == 1) {
-            message = MSG_SUCCESS_TO_REGISTER.getMessage();
-        } else if (result == -1) {
-            message = ERR_MSG_DUPLICATE_NAME.getErrorMessage();
-        } else if (result == -2){
-            message = ERR_MSG_DUPLICATE_ID.getErrorMessage();
-        } else {
-            message = ERR_MSG_FAILED_TO_REGISTER.getErrorMessage();
-        }
-        System.out.println(message);
-    };
-
-    public void read() {
-        List<Team> teamList = teamDao.findAllTeams();
-        showTeamList(teamList);
+    public List<Team> findAll() {
+        return teamDao.findAll();
     }
 
-    public void read(Long id) {
+    public String findById(Long id) {
         // 요구 사항에 없는 기능
+        return null;
     }
 
-    public void update(Team team) {
+    public String update(Team team) {
         // 요구 사항에 없는 기능
         if (team == null) {
             throw new InternalServerErrorException();
         }
-        showResult.accept(teamDao.update(team));
+        int result = teamDao.update(team);
+        return result == 1 ? MSG_SUCCESS_TO_REGISTER.getMessage() :
+                ERR_MSG_FAILED_TO_REGISTER.getErrorMessage();
     }
 
-    public void delete(Long id) {
+    public String delete(Long id) {
         // 요구 사항에 없는 기능
-        teamDao.delete(id);
+        int result = teamDao.delete(id);
+        return result == 1 ? MSG_SUCCESS_TO_REGISTER.getMessage() :
+                ERR_MSG_FAILED_TO_REGISTER.getErrorMessage();
     }
 
 }
