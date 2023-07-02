@@ -10,6 +10,7 @@
 - [x] 추상화를 통한 협업 효율성 높이기.
 - [x] 변수명과 메서드명의 Code convention 지키기.
 - [x] Functional 인터페이스를 사용하여 객체의 불변성을 보장하고, thread safe한 코드를 구현하기.
+- [x] 불필요한 setter 사용을 자제하고, builder 패턴을 이용하여 객체를 생성하기.
 
 ## 프로젝트 기술 소개 Technology List
 
