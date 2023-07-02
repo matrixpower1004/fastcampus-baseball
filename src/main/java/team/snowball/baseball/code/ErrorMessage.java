@@ -22,7 +22,9 @@ public enum ErrorMessage {
     ERR_MSG_FAILED_TO_UPDATE("The data update failed. Please try again."),
     ERR_MSG_FAILED_TO_FIND("The data search failed. Please try again."),
     ERR_MSG_FAILED_TO_FIND_TEAM_NAME("The team name search failed. Please try again."),
-    ERR_MSG_FAILED_TO_FIND_BY_ID("The requested ID could not be found.. Please try again."),;
+    ERR_MSG_FAILED_TO_FIND_BY_ID("The requested ID could not be found.. Please try again."),
+    ERR_MSG_DUPLICATE_NAME("The duplicate name detected."),
+    ERR_MSG_DUPLICATE_ID("The duplicate id detected.");
 
     private final String errorMessage;
 }

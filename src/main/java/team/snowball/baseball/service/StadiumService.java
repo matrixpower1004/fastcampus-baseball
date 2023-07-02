@@ -1,10 +1,14 @@
 package team.snowball.baseball.service;
 
 import team.snowball.baseball.dao.StadiumDao;
+import team.snowball.baseball.handler.InternalServerErrorException;
 import team.snowball.baseball.model.stadium.Stadium;
 
 import java.util.List;
+import java.util.function.Consumer;
 
+import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_REGISTER;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_DUPLIACTE_NAME;
 import static team.snowball.baseball.view.Report.showStadiumList;
 
 /**
@@ -29,8 +33,16 @@ public class StadiumService {
     }
 
     public void save(Stadium stadium) {
-        int result = stadiumDao.save(stadium);
+        if (stadium == null) {
+            throw new InternalServerErrorException();
+        }
+        showResult.accept(stadiumDao.insert(stadium));
     }
+
+    Consumer<Integer> showResult = (result) -> {
+        System.out.println(result == 1 ?
+                MSG_SUCCESS_TO_REGISTER.getMessage() : ERR_MSG_DUPLIACTE_NAME.getErrorMessage());
+    };
 
     public void read() {
         List<Stadium> stadiums = stadiumDao.findAllStadiums();
@@ -42,7 +54,10 @@ public class StadiumService {
     }
 
     public void update(Stadium stadium) {
-        stadiumDao.update(stadium);
+        if (stadium == null) {
+            throw new InternalServerErrorException();
+        }
+        showResult.accept(stadiumDao.update(stadium));
     }
 
     public void delete(Long id) {

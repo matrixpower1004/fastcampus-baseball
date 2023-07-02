@@ -57,8 +57,8 @@ class StadiumDAOTest {
     void update_test() {
         // Given
         Stadium stadium = Stadium.builder()
-                .id(1L)
-                .name("잠실야구장")
+                .id(2L)
+                .name("잠야구장")
                 .build();
 
         // When
@@ -66,6 +66,20 @@ class StadiumDAOTest {
 
         // Then
         assertThat(result).isEqualTo(1);
+    }
+
+    @Test
+    void duplicate_test() {
+        // Given
+        Stadium stadium = Stadium.builder()
+                .name("잠실야구")
+                .build();
+
+        // When
+        int result = StadiumDao.getInstance().nameDuplicate(stadium);
+
+        // Then
+        assertThat(result).isEqualTo(0);
     }
 
 }

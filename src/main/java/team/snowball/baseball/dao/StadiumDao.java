@@ -11,8 +11,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static team.snowball.baseball.code.ConsoleMessage.*;
-import static team.snowball.baseball.code.ErrorMessage.*;
+import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_DELETE;
+import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_UPDATE;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_DELETE;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_UPDATE;
 
 /**
  * author         : Yongwon Kim
@@ -41,19 +43,9 @@ public class StadiumDao implements StadiumRepository {
         try {
             CONNECTION.setAutoCommit(false);
 
-            //야구장 이름 중복 체크
-            String checkQuery = "SELECT COUNT(*) FROM stadium WHERE name = ?";
-            try (PreparedStatement pstmt = CONNECTION.prepareStatement(checkQuery)) {
-                pstmt.setString(1, stadium.getName());
-                try (ResultSet resultSet = pstmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        int count = resultSet.getInt(1);
-                        if (count > 0) {
-                            System.out.println(ERR_MSG_FAILED_TO_FIND.getErrorMessage());
-                            return 0;
-                        }
-                    }
-                }
+            int duplicateCount = nameDuplicate(stadium);
+            if (duplicateCount > 0) {
+                return 0;
             }
 
             String Query = "INSERT INTO stadium(name, created_at) VALUES (?, now())";
@@ -63,12 +55,10 @@ public class StadiumDao implements StadiumRepository {
 
                 if (result == 1) {
                     CONNECTION.commit();
-                    System.out.println(MSG_SUCCESS_TO_REGISTER.getMessage());
                     return result;
                 }
 
                 CONNECTION.rollback();
-                System.out.println(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
                 return result;
             }
 
@@ -82,6 +72,7 @@ public class StadiumDao implements StadiumRepository {
             System.out.println(e.getMessage());
             throw new DatabaseException();
         }
+
     }
 
     // 야구장 전체 조회
@@ -152,36 +143,56 @@ public class StadiumDao implements StadiumRepository {
     // 업데이트
     @Override
     public int update(Stadium stadium) {
-        PreparedStatement pstmt = null;
         int result = 0;
         try {
             CONNECTION.setAutoCommit(false);
 
+            int duplicateCount = nameDuplicate(stadium);
+            if (duplicateCount > 0) {
+                return 0;
+            }
+
             String query = "UPDATE stadium SET name=? WHERE id=?";
-            pstmt = CONNECTION.prepareStatement(query);
-            pstmt.setString(1, stadium.getName());
-            pstmt.setLong(2, stadium.getId());
+            try (PreparedStatement pstmt = CONNECTION.prepareStatement(query)) {
+                pstmt.setString(1, stadium.getName());
+                pstmt.setLong(2, stadium.getId());
 
-            result = pstmt.executeUpdate();
+                result = pstmt.executeUpdate();
 
-            if (result == 1) {
-                CONNECTION.commit();
-                System.out.println(MSG_SUCCESS_TO_UPDATE.getMessage());
-            } else {
-                CONNECTION.rollback();
-                System.out.println(ERR_MSG_FAILED_TO_UPDATE.getErrorMessage());
+                if (result == 1) {
+                    CONNECTION.commit();
+                    System.out.println(MSG_SUCCESS_TO_UPDATE.getMessage());
+                } else {
+                    CONNECTION.rollback();
+                    System.out.println(ERR_MSG_FAILED_TO_UPDATE.getErrorMessage());
+                }
             }
 
         } catch (SQLException e) {
-            try {
-                CONNECTION.rollback();
-            } catch (SQLException ex) {
-                throw new DatabaseException(ex.getMessage());
-            }
-            throw new DatabaseException(e.getMessage());
-
+                try {
+                    CONNECTION.rollback();
+                } catch (SQLException ex) {
+                    throw new DatabaseException(ex.getMessage());
+                }
+                throw new DatabaseException(e.getMessage());
         }
         return result;
     }
 
+    //중복 검사
+    public int nameDuplicate(Stadium stadium) {
+        String query = "SELECT COUNT(*) FROM stadium WHERE name = ?";
+        try (PreparedStatement pstmt = CONNECTION.prepareStatement(query)) {
+            pstmt.setString(1, stadium.getName());
+            try (ResultSet resultSet = pstmt.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new DatabaseException();
+        }
+        return 0;
+    }
 }
