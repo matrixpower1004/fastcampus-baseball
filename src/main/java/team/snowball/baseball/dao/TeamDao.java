@@ -11,8 +11,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static team.snowball.baseball.code.ConsoleMessage.*;
-import static team.snowball.baseball.code.ErrorMessage.*;
+import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_DELETE;
+import static team.snowball.baseball.code.ConsoleMessage.MSG_SUCCESS_TO_UPDATE;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_DELETE;
+import static team.snowball.baseball.code.ErrorMessage.ERR_MSG_FAILED_TO_UPDATE;
 
 /**
  * author         : Yongwon Kim
@@ -37,37 +39,18 @@ public class TeamDao implements TeamRepository {
     // 팀 등록
     @Override
     public int insert(Team team) {
-        //PreparedStatement pstmt = null;
         int result = 0;
         try {
             connection.setAutoCommit(false);
 
-            //중목 팀이름 체크
-            String checkQueryName = "SELECT COUNT(*) FROM team WHERE name = ?";
-            try (PreparedStatement pstmt = connection.prepareStatement(checkQueryName)) {
-                pstmt.setString(1, team.getName());
-                try (ResultSet resultSet = pstmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        int count = resultSet.getInt(1);
-                        if (count > 0) {
-                            throw new DatabaseException(ERR_MSG_FAILED_TO_FIND.getErrorMessage());
-                        }
-                    }
-                }
+            int nameDuplicateCount = nameDuplicate(team);
+            if (nameDuplicateCount > 0) {
+                return -1;
             }
 
-            //중목 경기장id 체크
-            String checkQueryStadiumName = "SELECT COUNT(*) FROM team WHERE stadium_id = ?";
-            try (PreparedStatement pstmt = connection.prepareStatement(checkQueryStadiumName)) {
-                pstmt.setInt(1, team.getStadiumId());
-                try (ResultSet resultSet = pstmt.executeQuery()) {
-                    if (resultSet.next()) {
-                        int count = resultSet.getInt(1);
-                        if (count > 0) {
-                            throw new DatabaseException(ERR_MSG_FAILED_TO_FIND.getErrorMessage());
-                        }
-                    }
-                }
+            int idDuplicateCount = idDuplicate(team);
+            if (idDuplicateCount > 0) {
+                return -2;
             }
 
             String query = "INSERT INTO team(stadium_id, name, created_at) VALUES (?, ?, now())";
@@ -78,12 +61,10 @@ public class TeamDao implements TeamRepository {
 
                 if (result == 1) {
                     connection.commit();
-                    System.out.println(MSG_SUCCESS_TO_REGISTER.getMessage());
                     return result;
                 }
 
                 connection.rollback();
-                System.out.println(ERR_MSG_FAILED_TO_REGISTER.getErrorMessage());
                 return result;
             }
 
@@ -130,26 +111,27 @@ public class TeamDao implements TeamRepository {
     // 팀 삭제
     @Override
     public int delete(Long id) {
-        PreparedStatement pstmt = null;
+
         int result = 0;
         try {
             connection.setAutoCommit(false);
 
             String query = "DELETE FROM team WHERE id=?";
-            pstmt = connection.prepareStatement(query);
-            pstmt.setLong(1, id);
+            try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+                pstmt.setLong(1, id);
 
-            result = pstmt.executeUpdate();
+                result = pstmt.executeUpdate();
 
-            if (result == 1) {
-                System.out.println(MSG_SUCCESS_TO_DELETE.getMessage());
-                connection.commit();
+                if (result == 1) {
+                    System.out.println(MSG_SUCCESS_TO_DELETE.getMessage());
+                    connection.commit();
+                    return result;
+                }
+
+                connection.rollback();
+                System.out.println(ERR_MSG_FAILED_TO_DELETE.getErrorMessage());
                 return result;
             }
-
-            connection.rollback();
-            System.out.println(ERR_MSG_FAILED_TO_DELETE.getErrorMessage());
-            return result;
 
         } catch (Exception e) {
             try {
@@ -166,24 +148,34 @@ public class TeamDao implements TeamRepository {
     // 팀 업데이트
     @Override
     public int update(Team team) {
-        PreparedStatement pstmt = null;
         int result = 0;
         try {
             connection.setAutoCommit(false);
 
+            int nameDuplicateCount = nameDuplicate(team);
+            if (nameDuplicateCount > 0) {
+                return -1;
+            }
+
+            int idDuplicateCount = idDuplicate(team);
+            if (idDuplicateCount > 0) {
+                return -2;
+            }
+
             String query = "UPDATE team SET name=? WHERE id=?";
-            pstmt = connection.prepareStatement(query);
-            pstmt.setString(1, team.getName());
-            pstmt.setLong(2, team.getId());
+            try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+                pstmt.setString(1, team.getName());
+                pstmt.setLong(2, team.getId());
 
-            result = pstmt.executeUpdate();
+                result = pstmt.executeUpdate();
 
-            if (result == 1) {
-                connection.commit();
-                System.out.println(MSG_SUCCESS_TO_UPDATE.getMessage());
-            } else {
-                connection.rollback();
-                System.out.println(ERR_MSG_FAILED_TO_UPDATE.getErrorMessage());
+                if (result == 1) {
+                    connection.commit();
+                    System.out.println(MSG_SUCCESS_TO_UPDATE.getMessage());
+                } else {
+                    connection.rollback();
+                    System.out.println(ERR_MSG_FAILED_TO_UPDATE.getErrorMessage());
+                }
             }
 
         } catch (SQLException e) {
@@ -196,4 +188,38 @@ public class TeamDao implements TeamRepository {
         }
         return result;
     }
+
+    public int nameDuplicate(Team team) {
+        String query = "SELECT COUNT(*) FROM team WHERE name = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setString(1, team.getName());
+            try (ResultSet resultSet = pstmt.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new DatabaseException();
+        }
+        return -1;
+    }
+
+    public int idDuplicate(Team team) {
+        String query = "SELECT COUNT(*) FROM team WHERE stadium_id = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
+            pstmt.setLong(1, team.getStadiumId());
+            try (ResultSet resultSet = pstmt.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getInt(1);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            throw new DatabaseException();
+        }
+        return -2;
+    }
+
+
 }
