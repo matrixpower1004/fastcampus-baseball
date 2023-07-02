@@ -17,6 +17,9 @@ public interface PlayerRepository {
 
     int delete(Long id);
 
-    void findLineByPosition();
+    PositionRespDto findLineByPosition();
 
+    List<Player> findAll();
+
+    Player findById(Long id);
 }

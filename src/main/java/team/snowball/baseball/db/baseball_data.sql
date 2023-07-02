@@ -28,31 +28,39 @@ insert into out_player(player_id, name, reason, created_at) values (11, "은퇴"
 
 
 -- Dynamic pivot query
+DROP PROCEDURE IF EXISTS POSITION_PIVOT;
+
+DELIMITER $$
+CREATE PROCEDURE POSITION_PIVOT(
+)
+BEGIN
+
 SET @sql = (
-    SELECT GROUP_CONCAT(
-                   CONCAT(
-                           'MAX(CASE WHEN t.id = ', id, ' THEN p.name ELSE NULL END) AS `',
-                           SUBSTRING_INDEX(SUBSTRING_INDEX(name, " ", 2), " ", -1), '`'
-                       )
-                   ORDER BY id
-               )
-    FROM team
+  SELECT GROUP_CONCAT(
+    CONCAT(
+      'MAX(CASE WHEN t.id = ', id, ' THEN p.name ELSE '''' END) AS `', name, '`'
+    )
+    ORDER BY id
+  )
+  FROM team
 );
 
 SET @query = CONCAT(
-    'SELECT p.position, ', @sql, '
+  'SELECT p.position, ', @sql, '
    FROM player p
    LEFT JOIN team t ON p.team_id = t.id
    GROUP BY p.position
    ORDER BY p.position'
-    );
+);
 
 PREPARE stmt FROM @query;
 EXECUTE stmt;
-DEALLOCATE PREPARE stmt;
 
-select * from stadium;
-select * from team;
-select * from player;
-select * from out_player;
+END$$
+DELIMITER ;
+
+
+-- JDBC에서 프로시저 호출로 실행
+CALL POSITION_PIVOT();
+
 
