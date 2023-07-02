@@ -219,7 +219,7 @@ DELIMITER ;
 * 팀장 : 이지상
     * 시간이 부족하여 어노테이션을 직접 구현하여 적용해 보지 못한 점이 아쉬웠습니다.
     * Java 14부터 지원된 record 클래스를 활용해 보고자 Java 17을 선택했는데 builder 패턴에 길들여져서(?) record를 활용해 보지 못한 점이 아쉬었습니다. 다른 프로젝트엔 꼭~!(really?)
-    * Functional interface를 마음껏 활용해 본 프로젝트였고, 추상화를 어디까지 구현할 수 있는제 스스로에 대한 도전적인 프로젝트였습니다.
-    * GitFlow brach 전략을 사용하지 못한 점이 아쉬었습니다. 프로젝트의 커밋이 처음 생각보다 Devlop branch의 필요성이 대두되었고, 다음 프로젝트에는 꼭 Develop branch를 사용하는 GitFlow branch 전략을 사용해 보고 싶네요.
+    * Functional interface를 마음껏 활용해 본 프로젝트였고, 추상화를 어디 수준까지 구현할 수 있는지 스스로에 대한 도전적인 프로젝트였습니다.
+    * GitFlow brach 전략을 사용하지 못한 점이 아쉬었습니다. 프로젝트의 커밋이 처음 생각보다 많아지면서 Devlop branch의 필요성이 대두되었고, 다음 프로젝트에는 꼭 Develop branch를 사용하는 GitFlow branch 전략을 사용해 보고 싶네요.
 * 팀원 : 김용원
     * 
