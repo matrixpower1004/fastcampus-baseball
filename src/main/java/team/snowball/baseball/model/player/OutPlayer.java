@@ -11,7 +11,6 @@ import java.sql.Timestamp;
  * description    :
  */
 @Getter
-@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor

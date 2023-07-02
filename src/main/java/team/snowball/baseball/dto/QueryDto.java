@@ -1,9 +1,8 @@
 package team.snowball.baseball.dto;
 
 import lombok.*;
-import team.snowball.baseball.code.Command;
+import team.snowball.baseball.controller.Command;
 
-import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -12,7 +11,6 @@ import java.util.Map;
  * description    :
  */
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
