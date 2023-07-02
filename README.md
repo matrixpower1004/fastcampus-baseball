@@ -5,11 +5,11 @@
 # 패스트캠퍼스 Toy Project II : 야구 관리 프로그램
 
 ## 프로젝트 check list
-- [x] Github project를 사용하여 일정관리 및 이슈 관리.
-- [x] Enum 사용을 사용한 공통 입출력 메시지 관리.
+- [x] Github project를 사용하여 일정 관리 및 이슈 관리.
+- [x] Enum을 활용한 공통 입출력 메시지 관리.
 - [x] 추상화를 통한 협업 효율성 높이기.
 - [x] 변수명과 메서드명의 Code convention 지키기.
-- [x] Functional 인터페이스를 사용하여 객체의 불변성을 보장하고, thread safe한 코드를 구현.
+- [x] Functional 인터페이스를 사용하여 객체의 불변성을 보장하고, thread safe한 코드를 구현하기.
 
 ## 프로젝트 기술 소개 Technology List
 
@@ -178,13 +178,14 @@ DELIMITER ;
 * 팀장 : [이지상](https://github.com/matrixpower1004) Jisang Lee
     * 프로젝트 Setup
     * DB Connection 및 테이블 생성
-    * 공통 입력/파라미터 구현
-    * 공통 명령어 처리 Controller 구현
+    * 공통 입력 및 파라미터를 처리하는 InputServicer 구현
+    * 사용자가 입력한 명령어를 해석하여 메서드를 호출하는 Main Controller 구현
     * Player, OutPlayer  구현
     * 통합 테스트
 * 팀원 : [김용원](https://github.com/Horaiz-UQ) Yongwon Kim
     * Stadium 구현
     * Team 구현
+    * 통합 테스트
     * 발표 준비 및 문서 작성
 
 ## 프로젝트 요약
@@ -198,9 +199,9 @@ DELIMITER ;
 ### Enum을 통한 Controller 구현
 ![enum1](https://github.com/matrixpower1004/fastcampus-baseball/assets/104916288/8a0fdf76-edcb-44de-935f-81d2593c4d21)
 * 이 프로젝트에서 가장 많은 시간과 공을 들인 부분입니다.
-* 어떤 프로젝트든 기본적인 CRUD를 하는 것은 같고, 이런 공통된 부분을 추상화를 통해 해결할 수 없을까 하는 생각이 시작이었습니다.
-* 입력 데이터의 명령어 및 Parameter를 parsing할 때 이미 if문을 여러개 사용하는데 Controller에서 또 if문을 사용할 필요가 있을까? 이런 질문으로 시작된 생각은 Enum에 이미 카테고리가 나눠져 있으니 if문으로 분기를 하는 대신 이걸 활용할 방법은 없을까 라는 생각으로 이어졌습니다.
-* 마지막으로는 enum을 통한 method 주입을 구현해 볼 수는 없을까라는 생각에 enum을 통한 컨트롤러 구현에까지 이르게 되었습니다.
+* 어떤 프로젝트든 기본적인 CRUD를 하는 것은 같고, 이런 공통된 부분을 추상화를 통해 해결할 수 없을까 라는 부분을 고민하였습니다.
+* 사용자 입력 데이터의 명령어 및 Parameter를 parsing하면서 Enum을 통한 category화가 이루어지는데, Controller에서 또 분기를 위한 if문을 사용할 필요가 있을까? 이런 질문으로 시작된 생각은 if문으로 분기를 하는 대신 Enum의 category화 된 구조를 활용할 방법은 없을까 라는 생각으로 이어졌습니다.
+* 마지막으로는 enum을 통한 method 주입을 구현해 볼 수는 없을까라는 생각에 enum을 통한 컨트롤러를 구헌하게 되었습니다.
 
 
 ### Enum과 functional interface를 활용한 추상화
@@ -211,14 +212,14 @@ DELIMITER ;
 ### Enum을 사용한 공통 메시지 출력
 <img src="https://github.com/Horaiz-UQ/fastcampus-baseball/assets/116620881/df983391-632e-4543-84a3-21bc10dabfa4" width="700">
 
-* 사용자에게 보여지는 메시지를 Enum을 통해 상수화함으로써, 어느 비즈니스 로직에서나 공통된 사용자 메시지를 출력하도록 보장.
-* 또한 메시지가 바뀌는 경우에도 유지보수가 용이하도록 구현.
+* 사용자에게 보여지는 메시지를 Enum을 통해 상수화함으로써, 어느 비즈니스 로직에서나 공통된 사용자 메시지를 출력하도록 보장하였습니다.
+* 또한 메시지가 바뀌는 경우에도 유지보수가 용이하도록 구현하였습니다.
 
 ## 프로젝트 후기
 * 팀장 : 이지상
-    * 시간간이 부족하여 어노테이션을 직접 구현하여 적용해 보지 못한 점이 아쉬웠습니다.
+    * 시간이 부족하여 어노테이션을 직접 구현하여 적용해 보지 못한 점이 아쉬웠습니다.
     * Java 14부터 지원된 record 클래스를 활용해 보고자 Java 17을 선택했는데 builder 패턴에 길들여져서(?) record를 활용해 보지 못한 점이 아쉬었습니다. 다른 프로젝트엔 꼭~!(really?)
     * Functional interface를 마음껏 활용해 본 프로젝트였고, 추상화를 어디까지 구현할 수 있는제 스스로에 대한 도전적인 프로젝트였습니다.
     * GitFlow brach 전략을 사용하지 못한 점이 아쉬었습니다. 프로젝트의 커밋이 처음 생각보다 Devlop branch의 필요성이 대두되었고, 다음 프로젝트에는 꼭 Develop branch를 사용하는 GitFlow branch 전략을 사용해 보고 싶네요.
 * 팀원 : 김용원
-	* 
+    * 
