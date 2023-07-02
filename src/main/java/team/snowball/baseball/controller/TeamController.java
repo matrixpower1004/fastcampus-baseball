@@ -5,7 +5,9 @@ import team.snowball.baseball.dto.QueryDto;
 import team.snowball.baseball.handler.InvalidInputException;
 import team.snowball.baseball.model.team.Team;
 import team.snowball.baseball.service.TeamService;
+import team.snowball.baseball.view.TeamReport;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -33,17 +35,17 @@ public class TeamController implements ModelController {
 
     @Override
     public void findAll() {
-        teamService.read();
+        List<Team> teamList = teamService.findAll();
+        TeamReport.showTeamList(teamList);
     }
 
     public void findById(QueryDto queryDto) {
         if (isEmptyParams.test(queryDto)) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
-        if (queryDto.getParams().containsKey(ParamList.ID.getKeyName())) {
-            Long id = getParamId.apply(queryDto);
-            teamService.read(id);
-        }
+        Long id = getParamId.apply(queryDto);
+        String result = teamService.findById(id);
+        System.out.println(result);
     }
 
     public void save(QueryDto queryDto) {
@@ -59,7 +61,8 @@ public class TeamController implements ModelController {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
         Team team = getTeamParams.apply(queryDto);
-        teamService.update(team);
+        String result = teamService.update(team);
+        System.out.println(result);
     }
 
     public void delete(QueryDto queryDto) {
@@ -68,7 +71,8 @@ public class TeamController implements ModelController {
         }
         if (queryDto.getParams().containsKey(ParamList.ID.getKeyName())) {
             Long id = getParamId.apply(queryDto);
-            teamService.delete(id);
+            String result = teamService.delete(id);
+            System.out.println(result);
         }
     }
 
@@ -78,19 +82,21 @@ public class TeamController implements ModelController {
 
         try {
             for (Map.Entry<String, String> entry : queryParseDto.getParams().entrySet()) {
-                if (entry.getKey().equals(ParamList.STADIUM_ID.getKeyName()) && entry.getValue() != null) {
+                if (entry.getKey().equals(ParamList.STADIUM_ID.getKeyName()) &&
+                        !entry.getValue().isEmpty()) {
                     stadiumId = entry.getValue();
                 }
-                if (entry.getKey().equals(ParamList.NAME.getKeyName()) && entry.getValue() != null) {
+                if (entry.getKey().equals(ParamList.NAME.getKeyName()) &&
+                        !entry.getValue().isEmpty()) {
                     name = entry.getValue();
                 }
             }
-        } catch (IllegalStateException | NullPointerException e) {
+        } catch (IllegalStateException | NullPointerException | NumberFormatException e) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
 
         Team team = Team.builder()
-                .stadiumId(Integer.parseInt(stadiumId))
+                .stadiumId(Long.valueOf(stadiumId))
                 .name(name)
                 .build();
 
