@@ -1,6 +1,6 @@
 package team.snowball.baseball;
 
-import team.snowball.baseball.code.Command;
+import team.snowball.baseball.controller.Command;
 import team.snowball.baseball.dto.QueryDto;
 import team.snowball.baseball.handler.InputEndException;
 import team.snowball.baseball.handler.InvalidInputException;

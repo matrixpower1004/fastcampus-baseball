@@ -1,8 +1,7 @@
-package team.snowball.baseball.code;
+package team.snowball.baseball.controller;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import team.snowball.baseball.controller.*;
 import team.snowball.baseball.dto.QueryDto;
 import team.snowball.baseball.handler.InvalidInputException;
 
@@ -21,40 +20,40 @@ import static team.snowball.baseball.controller.ModelController.*;
 public enum Command {
     STADIUM_LIST("야구장목록", (queryDto) -> {
         if (isEmptyParams.test(queryDto)) {
-            StadiumController.getInstance().read();
+            StadiumController.getInstance().findAll();
             return;
         }
-        StadiumController.getInstance().read(queryDto);
+        StadiumController.getInstance().findById(queryDto);
     }),
     STADIUM_SAVE("야구장등록", (queryDto) -> {
         StadiumController.getInstance().save(queryDto);
     }),
     TEAM_LIST("팀목록", (queryDto) -> {
         if (isEmptyParams.test(queryDto)) {
-            TeamController.getInstance().read();
+            TeamController.getInstance().findAll();
             return;
         }
-        TeamController.getInstance().read(queryDto);
+        TeamController.getInstance().findById(queryDto);
     }),
     TEAM_SAVE("팀등록", (queryDto -> {
         TeamController.getInstance().save(queryDto);
     })),
     PLAYER_LIST("선수목록", (queryDto) -> {
         if (isEmptyParams.test(queryDto)) {
-            PlayerController.getInstance().read();
+            PlayerController.getInstance().findAll();
             return;
         }
-        PlayerController.getInstance().read(queryDto);
+        PlayerController.getInstance().findById(queryDto);
     }),
     PLAYER_SAVE("선수등록", (queryDto) -> {
         PlayerController.getInstance().save(queryDto);
     }),
     OUT_PLAYER_LIST("퇴출목록", (queryDto) -> {
         if (isEmptyParams.test(queryDto)) {
-            OutPlayerController.getInstance().read();
+            OutPlayerController.getInstance().findAll();
             return;
         }
-        OutPlayerController.getInstance().read(queryDto);
+        OutPlayerController.getInstance().findById(queryDto);
     }),
     OUT_PLAYER_SAVE("퇴출등록", (queryDto) -> {
         OutPlayerController.getInstance().save(queryDto);
