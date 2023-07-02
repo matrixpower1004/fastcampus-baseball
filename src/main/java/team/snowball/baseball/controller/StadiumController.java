@@ -32,17 +32,17 @@ public class StadiumController implements ModelController {
     }
 
     @Override
-    public void read() {
-        stadiumService.read();
+    public void findAll() {
+        stadiumService.findAll();
     }
 
-    public void read(QueryDto queryDto) {
+    public void findById(QueryDto queryDto) {
         if (isEmptyParams.test(queryDto)) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
         if (queryDto.getParams().containsKey("id")) {
             Long id = getParamId.apply(queryDto);
-            stadiumService.read(id);
+            stadiumService.find(id);
         }
     }
 

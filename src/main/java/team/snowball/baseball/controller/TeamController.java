@@ -32,11 +32,11 @@ public class TeamController implements ModelController {
     }
 
     @Override
-    public void read() {
+    public void findAll() {
         teamService.read();
     }
 
-    public void read(QueryDto queryDto) {
+    public void findById(QueryDto queryDto) {
         if (isEmptyParams.test(queryDto)) {
             throw new InvalidInputException(ERR_MSG_INVALID_PARAMETER.getErrorMessage());
         }
