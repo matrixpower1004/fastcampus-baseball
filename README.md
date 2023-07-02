@@ -123,23 +123,23 @@ insert into out_player(player_id, reason, created_at) values (11, "은퇴", now(
 ## 프로젝트 요약
 
 ### Github Project 사용
-<img src="./https://github.com/Horaiz-UQ/fastcampus-baseball/assets/116620881/08c95fc5-25a3-4090-828f-4c9ca1a8c79f" width="800">
+<img src="https://github.com/Horaiz-UQ/fastcampus-baseball/assets/116620881/08c95fc5-25a3-4090-828f-4c9ca1a8c79f" width="800">
 
 * project를 사용하여 일정 관리 및 이슈 관리 용이 
 * Main 브런치 사용
 
 ### Enum과 functional interface 활용
-<img src="./https://github.com/Horaiz-UQ/fastcampus-baseball/assets/116620881/447b2b2d-efeb-4fc9-bf0f-01403fc81f12" width="500">
-<img src="./https://github.com/Horaiz-UQ/fastcampus-baseball/assets/116620881/8e1ccf6e-4553-46af-b0e9-c2f8abfb5a37" width="600">
+<img src="https://github.com/Horaiz-UQ/fastcampus-baseball/assets/116620881/447b2b2d-efeb-4fc9-bf0f-01403fc81f12" width="500">
+<img src="https://github.com/Horaiz-UQ/fastcampus-baseball/assets/116620881/8e1ccf6e-4553-46af-b0e9-c2f8abfb5a37" width="600">
 
 * Enum과 functional interface을 사용하여 if 문 분기를 최소화하고 비즈니스 로직을 구현
 
 ### 출력 메세지 Enum을 사용
-<img src="./https://github.com/Horaiz-UQ/fastcampus-baseball/assets/116620881/df983391-632e-4543-84a3-21bc10dabfa4" width="700">
+<img src="https://github.com/Horaiz-UQ/fastcampus-baseball/assets/116620881/df983391-632e-4543-84a3-21bc10dabfa4" width="700">
 
 * 출력 메시지를 enum을 통해 상수화 함으로써 유지보수 용이
 
 ### 추상화
-<img src="./https://github.com/Horaiz-UQ/fastcampus-baseball/assets/116620881/457ce004-03c7-4876-abc4-7d84feca0bdd4" width="700">
+<img src="https://github.com/Horaiz-UQ/fastcampus-baseball/assets/116620881/457ce004-03c7-4876-abc4-7d84feca0bdd4" width="700">
  
 * 매우 높은 추상화를 통해 협업 용이 
